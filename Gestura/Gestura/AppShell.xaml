@@ -8,8 +8,18 @@
     Title="Gestura">
 
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    Title="Home"
+    ContentTemplate="{DataTemplate local:Views.HomePage}"
+    Route="HomePage" />
+
+    <ShellContent
+    Title="Image Gallery"
+    ContentTemplate="{DataTemplate local:Views.ImageGalleryPage}"
+    Route="ImageGalleryPage"/>
+
+    <ShellContent
+    Title="Gestionnaire de Sessions"
+    ContentTemplate="{DataTemplate local:Views.DrawingSessionsManagerPage}"
+    Route="DrawingSessionsManagerPage"/>
 
 </Shell>

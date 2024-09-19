@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Gestura.Interfaces;
+using Gestura.Repositories;
+using Gestura.Services;
+using Gestura.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Gestura
 {
@@ -16,10 +20,37 @@ namespace Gestura
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
+            // Singletons
+            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "Gestura.db3");
+            var databaseService = new DatabaseService(dbPath);
+            databaseService.InitializeAsync().ConfigureAwait(false);
+            builder.Services.AddSingleton(databaseService);
+
+            builder.Services.AddSingleton<IImageRepository, ImageRepository>();
+            builder.Services.AddSingleton<IDrawingSessionRepository, DrawingSessionRepository>();
+            builder.Services.AddSingleton<IDrawingSessionImageReferenceRepository, DrawingSessionImageReferenceRepository>();
+
+            builder.Services.AddSingleton<ImageService>();
+            builder.Services.AddSingleton<DrawingSessionService>();
+
+            // ViewModels
+            builder.Services.AddTransient<HomeViewModel>();
+            builder.Services.AddTransient<CreateSessionViewModel>();
+            builder.Services.AddTransient<UpdateSessionViewModel>();
+            builder.Services.AddTransient<DrawingSessionViewModel>();
+            builder.Services.AddTransient<DrawingSessionManagerViewModel>();
+            builder.Services.AddTransient<ImageGalleryViewModel>();
+
+            var app = builder.Build();
+            _serviceProvider = app.Services;
+
+            return app;
         }
+
+        private static IServiceProvider _serviceProvider;
+        public static IServiceProvider Services => _serviceProvider;
     }
 }

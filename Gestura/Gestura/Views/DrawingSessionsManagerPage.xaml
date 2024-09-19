@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Gestura.Converters"
+             x:Class="Gestura.Views.DrawingSessionsManagerPage"
+             x:Name="DrawingSessionManagerPage"
+             Title="Gestionnaire des Sessions">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:CompletedToItalicConverter x:Key="CompletedToItalicConverter"/>
+            <local:CompletedToOpacityConverter x:Key="CompletedToOpacityConverter"/>
+            <local:CompletedToReplayTextConverter x:Key="CompletedToReplayTextConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <StackLayout Padding="10">
+        <Button Text="+" Command="{Binding AddNewSessionCommand}" HorizontalOptions="End"/>
+
+            <SearchBar Placeholder="Rechercher des sessions"
+                   Text="{Binding SearchQuery}"
+                   SearchCommand="{Binding SearchCommand}"/>
+        
+        <CollectionView ItemsSource="{Binding FilteredDrawingSessions}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame HasShadow="True" Margin="5" Padding="10">
+                        <StackLayout>
+                            <Label Text="{Binding Title}"
+                                   FontAttributes="{Binding IsCompleted, Converter={StaticResource CompletedToItalicConverter}}"
+                                   Opacity="{Binding IsCompleted, Converter={StaticResource CompletedToOpacityConverter}}"
+                                   FontSize="Medium"/>
+
+                            <Label Text="{Binding CreatedAt, StringFormat='{}{0:dd/MM/yyyy}'}" FontSize="Small"/>
+
+                            <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                                <Button Text="Modifier"
+                                        Command="{Binding Source={x:Reference DrawingSessionManagerPage}, Path=BindingContext.EditSessionCommand}"
+                                        CommandParameter="{Binding .}"/>
+
+                                <Button Text="Supprimer"
+                                        Command="{Binding Source={x:Reference DrawingSessionManagerPage}, Path=BindingContext.DeleteSessionCommand}"
+                                        CommandParameter="{Binding .}"/>
+
+                                <Button Text="{Binding IsCompleted, Converter={StaticResource CompletedToReplayTextConverter}}"
+                                        Command="{Binding Source={x:Reference DrawingSessionManagerPage}, Path=BindingContext.StartOrReplaySessionCommand}"
+                                        CommandParameter="{Binding .}"/>
+                            </StackLayout>
+                        </StackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+
+</ContentPage>
