@@ -1,4 +1,5 @@
-﻿using Gestura.Views;
+﻿using Gestura.Interfaces;
+using Gestura.Views;
 using System.Windows.Input;
 
 namespace Gestura.ViewModels

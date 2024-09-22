@@ -1,15 +1,15 @@
-﻿using Gestura.Models;
-using Gestura.Services;
+﻿using Gestura.Interfaces;
+using Gestura.Models;
 using System.Collections.ObjectModel;
 using System.Timers;
 using System.Windows.Input;
 
 namespace Gestura.ViewModels
 {
-    public class DrawingSessionViewModel : BaseViewModel
+    public class DrawingSessionViewModel : BaseViewModel, IDrawingSessionViewModel
     {
         private readonly DrawingSession _currentSession;
-        private readonly DrawingSessionService _drawingSessionService;
+        private readonly IDrawingSessionService _drawingSessionService;
         private int _currentImageIndex;
         private bool _isPlaying;
         private TimeSpan _remainingTime;
@@ -59,8 +59,9 @@ namespace Gestura.ViewModels
         public ICommand EndSessionCommand { get; }
         public ICommand ToggleControlsVisibilityCommand { get; }
 
-        public DrawingSessionViewModel(DrawingSession session)
+        public DrawingSessionViewModel(IDrawingSessionService drawingSessionService, DrawingSession session)
         {
+            _drawingSessionService = drawingSessionService ?? throw new ArgumentNullException(nameof(drawingSessionService));
             if (session == null)
             {
                 throw new ArgumentNullException(nameof(session));

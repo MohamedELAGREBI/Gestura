@@ -1,13 +1,12 @@
 ﻿using Gestura.Commons;
 using Gestura.Interfaces;
 using Gestura.Models;
-using Gestura.Services;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace Gestura.ViewModels
 {
-    public class ImageGalleryViewModel : BaseViewModel
+    public class ImageGalleryViewModel : BaseViewModel, IImageGalleryViewModel
     {
         private readonly IImageService _imageService;
         private readonly INotificationService _notificationService;

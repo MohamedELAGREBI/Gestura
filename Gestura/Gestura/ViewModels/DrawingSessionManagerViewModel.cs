@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace Gestura.ViewModels
 {
-    public class DrawingSessionManagerViewModel : BaseViewModel
+    public class DrawingSessionManagerViewModel : BaseViewModel, IDrawingSessionManagerViewModel
     {
         private readonly IDrawingSessionService _drawingSessionService;
         private readonly INotificationService _notificationService;
@@ -205,11 +205,11 @@ namespace Gestura.ViewModels
                 {
                     session.IsCompleted = false;
                     await _drawingSessionService.AddOrUpdateSessionAsync(session);
-                    await Shell.Current.Navigation.PushAsync(new DrawingSessionPage(session));
+                    await Shell.Current.Navigation.PushAsync(new DrawingSessionPage(_drawingSessionService, session));
                 }
                 else
                 {
-                    await Shell.Current.Navigation.PushAsync(new DrawingSessionPage(session));
+                    await Shell.Current.Navigation.PushAsync(new DrawingSessionPage(_drawingSessionService, session));
                 }
             }
             catch (Exception ex)

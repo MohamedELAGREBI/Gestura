@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace Gestura.ViewModels
 {
-    public class ImageSelectionViewModel : BaseViewModel
+    public class ImageSelectionViewModel : BaseViewModel, IImageSelectionViewModel
     {
         private readonly IImageService _imageService;
 

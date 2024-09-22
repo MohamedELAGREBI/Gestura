@@ -6,7 +6,7 @@ namespace Gestura.Views;
 
 public partial class AddOrUpdateSessionPage : ContentPage
 {
-	public AddOrUpdateSessionPage(IImageService imageService, DrawingSessionManagerViewModel parentViewModel, DrawingSession session)
+	public AddOrUpdateSessionPage(IImageService imageService, IDrawingSessionManagerViewModel parentViewModel, DrawingSession session)
 	{
 		InitializeComponent();
 		BindingContext = new AddOrUpdateSessionViewModel(imageService, parentViewModel, session);

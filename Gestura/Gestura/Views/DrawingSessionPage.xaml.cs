@@ -1,3 +1,4 @@
+using Gestura.Interfaces;
 using Gestura.Models;
 using Gestura.ViewModels;
 
@@ -7,10 +8,10 @@ public partial class DrawingSessionPage : ContentPage
 {
     private readonly DrawingSessionViewModel _viewModel;
 
-    public DrawingSessionPage(DrawingSession session)
+    public DrawingSessionPage(IDrawingSessionService drawingSessionService, DrawingSession session)
     {
         InitializeComponent();
-        BindingContext = new DrawingSessionViewModel(session);
+        BindingContext = new DrawingSessionViewModel(drawingSessionService, session);
         _viewModel = (DrawingSessionViewModel)BindingContext;
 
         StartBlinkingTimer();

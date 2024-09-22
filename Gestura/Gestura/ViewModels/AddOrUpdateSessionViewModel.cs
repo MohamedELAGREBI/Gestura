@@ -6,10 +6,10 @@ using System.Windows.Input;
 
 namespace Gestura.ViewModels
 {
-    public class AddOrUpdateSessionViewModel : BaseViewModel
+    public class AddOrUpdateSessionViewModel : BaseViewModel, IAddOrUpdateSessionViewModel
     {
         private readonly IImageService _imageService;
-        private readonly DrawingSessionManagerViewModel _parentViewModel;
+        private readonly IDrawingSessionManagerViewModel _parentViewModel;
 
         private DrawingSession _session;
 
@@ -55,7 +55,7 @@ namespace Gestura.ViewModels
         public ICommand SaveSessionCommand { get; }
         public ICommand CancelCommand { get; }
 
-        public AddOrUpdateSessionViewModel(IImageService imageService, DrawingSessionManagerViewModel parentViewModel, DrawingSession session = null)
+        public AddOrUpdateSessionViewModel(IImageService imageService, IDrawingSessionManagerViewModel parentViewModel, DrawingSession session = null)
         {
             _imageService = imageService;
             _parentViewModel = parentViewModel;

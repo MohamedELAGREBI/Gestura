@@ -38,12 +38,12 @@ namespace Gestura
             builder.Services.AddSingleton<INotificationService, NotificationService>();
 
             // ViewModels
-            builder.Services.AddTransient<HomeViewModel>();
-            builder.Services.AddTransient<AddOrUpdateSessionViewModel>();
-            builder.Services.AddTransient<DrawingSessionViewModel>();
+            builder.Services.AddTransient<IAddOrUpdateSessionViewModel, AddOrUpdateSessionViewModel>();
+            builder.Services.AddTransient<IDrawingSessionViewModel, DrawingSessionViewModel>();
+            builder.Services.AddTransient<IImageSelectionViewModel, ImageSelectionViewModel>();
             builder.Services.AddTransient<DrawingSessionManagerViewModel>();
             builder.Services.AddTransient<ImageGalleryViewModel>();
-            builder.Services.AddTransient<ImageSelectionViewModel>();
+            builder.Services.AddTransient<HomeViewModel>();
 
             var app = builder.Build();
             _serviceProvider = app.Services;
