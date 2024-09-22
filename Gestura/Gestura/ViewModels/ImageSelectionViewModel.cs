@@ -1,4 +1,5 @@
-﻿using Gestura.Models;
+﻿using Gestura.Interfaces;
+using Gestura.Models;
 using Gestura.Services;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -7,7 +8,7 @@ namespace Gestura.ViewModels
 {
     public class ImageSelectionViewModel : BaseViewModel
     {
-        private readonly ImageService _imageService;
+        private readonly IImageService _imageService;
 
         public ObservableCollection<ImageReference> AvailableImages { get; set; }
         public ObservableCollection<ImageReference> SelectedAvailableImages { get; set; }
@@ -26,9 +27,9 @@ namespace Gestura.ViewModels
 
         public event EventHandler<IEnumerable<ImageReference>> ImagesSelected;
 
-        public ImageSelectionViewModel(IEnumerable<ImageReference> sessionImages)
+        public ImageSelectionViewModel(IImageService imageService, IEnumerable<ImageReference> sessionImages)
         {
-            _imageService = MauiProgram.Services.GetService<ImageService>();
+            _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
 
             AvailableImages = new ObservableCollection<ImageReference>();
             SelectedSessionImages = new ObservableCollection<ImageReference>(sessionImages);

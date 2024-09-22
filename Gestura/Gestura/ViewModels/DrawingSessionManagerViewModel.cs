@@ -1,5 +1,5 @@
-﻿using Gestura.Models;
-using Gestura.Services;
+﻿using Gestura.Interfaces;
+using Gestura.Models;
 using Gestura.Views;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -8,7 +8,10 @@ namespace Gestura.ViewModels
 {
     public class DrawingSessionManagerViewModel : BaseViewModel
     {
-        private readonly DrawingSessionService _drawingSessionService;
+        private readonly IDrawingSessionService _drawingSessionService;
+        private readonly INotificationService _notificationService;
+        private readonly IImageService _imageService;
+
         public ObservableCollection<DrawingSession> DrawingSessions { get; set; }
         public ObservableCollection<DrawingSession> FilteredDrawingSessions { get; set; }
 
@@ -29,9 +32,11 @@ namespace Gestura.ViewModels
         public ICommand DeleteSessionCommand { get; }
         public ICommand StartOrReplaySessionCommand { get; }
 
-        public DrawingSessionManagerViewModel(DrawingSessionService drawingSessionService)
+        public DrawingSessionManagerViewModel(IImageService imageService, IDrawingSessionService drawingSessionService, INotificationService notificationService)
         {
-            _drawingSessionService = drawingSessionService;
+            _drawingSessionService = drawingSessionService ?? throw new ArgumentNullException(nameof(drawingSessionService));
+            _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
+            _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
 
             DrawingSessions = new ObservableCollection<DrawingSession>();
             FilteredDrawingSessions = new ObservableCollection<DrawingSession>();
@@ -47,12 +52,19 @@ namespace Gestura.ViewModels
 
         private async void LoadSessions()
         {
-            var sessions = await _drawingSessionService.GetSessionsAsync();
-            foreach (var session in sessions)
+            try
             {
-                DrawingSessions.Add(session);
+                var sessions = await _drawingSessionService.GetSessionsAsync();
+                foreach (var session in sessions)
+                {
+                    DrawingSessions.Add(session);
+                }
+                FilterSessions();
             }
-            FilterSessions();
+            catch (Exception ex)
+            {
+                await _notificationService.ShowErrorAsync("Erreur lors du chargement des sessions : " + ex.Message);
+            }
         }
 
         private void FilterSessions()
@@ -67,87 +79,142 @@ namespace Gestura.ViewModels
             }
         }
 
-        private void OnSearchSessions()
+        private async void OnSearchSessions()
         {
-            FilterSessions();
+            try
+            {
+                FilterSessions();
+            }
+            catch (Exception ex)
+            {
+                await _notificationService.ShowErrorAsync("Erreur lors de la recherche de sessions : " + ex.Message);
+            }
         }
 
         private async Task OnAddNewSessionAsync()
         {
-            await Shell.Current.Navigation.PushModalAsync(new AddOrUpdateSessionPage(this, null));
+            try
+            {
+                await Shell.Current.Navigation.PushModalAsync(new AddOrUpdateSessionPage(_imageService, this, null));
+            }
+            catch (Exception ex)
+            {
+                await _notificationService.ShowErrorAsync("Erreur lors de l'ajout d'une nouvelle session : " + ex.Message);
+            }
         }
 
         public async Task AddSessionAsync(DrawingSession session)
         {
-            await _drawingSessionService.AddOrUpdateSessionAsync(session);
-            DrawingSessions.Add(session);
+            try
+            {
+                await _drawingSessionService.AddOrUpdateSessionAsync(session);
+                DrawingSessions.Add(session);
 
-            FilterSessions();
+                FilterSessions();
+
+                await _notificationService.ShowSuccessAsync($"La session \"{session.Title}\" a été ajoutée avec succès.");
+            }
+            catch (Exception ex)
+            {
+                await _notificationService.ShowErrorAsync("Erreur lors de l'ajout de la session : " + ex.Message);
+            }
         }
 
         private async Task OnEditSessionAsync(DrawingSession session)
         {
-            if (session == null)
+            try
             {
-                throw new ArgumentNullException(nameof(session));
-            }
+                if (session == null)
+                {
+                    throw new ArgumentNullException(nameof(session));
+                }
 
-            await Shell.Current.Navigation.PushModalAsync(new AddOrUpdateSessionPage(this, session));
+                await Shell.Current.Navigation.PushModalAsync(new AddOrUpdateSessionPage(_imageService, this, session));
+            }
+            catch (Exception ex)
+            {
+                await _notificationService.ShowErrorAsync("Erreur lors de la modification de la session : " + ex.Message);
+            }
         }
 
         public async Task UpdateSessionAsync(DrawingSession session)
         {
-            await _drawingSessionService.AddOrUpdateSessionAsync(session);
-
-            var index = DrawingSessions.IndexOf(DrawingSessions.FirstOrDefault(s => s.Id == session.Id));
-            if (index >= 0)
+            try
             {
-                DrawingSessions[index] = session;
-            }
+                await _drawingSessionService.AddOrUpdateSessionAsync(session);
 
-            FilterSessions();
+                var index = DrawingSessions.IndexOf(DrawingSessions.FirstOrDefault(s => s.Id == session.Id));
+                if (index >= 0)
+                {
+                    DrawingSessions[index] = session;
+                }
+
+                FilterSessions();
+
+                await _notificationService.ShowSuccessAsync("Session modifiée avec succès.");
+            }
+            catch (Exception ex)
+            {
+                await _notificationService.ShowErrorAsync("Erreur lors de la modification de la session : " + ex.Message);
+            }
         }
 
         private async Task OnDeleteSessionAsync(DrawingSession session)
         {
-            if (session == null)
+            try
             {
-                throw new ArgumentNullException(nameof(session));
-            }
+                if (session == null)
+                {
+                    throw new ArgumentNullException(nameof(session));
+                }
 
-            var confirm = await Shell.Current.DisplayAlert("Confirmer", "Voulez-vous vraiment supprimer cette session ?", "Oui", "Non");
-            if (!confirm)
+                var confirm = await Shell.Current.DisplayAlert("Confirmer", "Voulez-vous vraiment supprimer cette session ?", "Oui", "Non");
+                if (!confirm)
+                {
+                    return;
+                }
+
+                await _drawingSessionService.DeleteSessionAsync(session);
+                DrawingSessions.Remove(session);
+                FilterSessions();
+
+                await _notificationService.ShowSuccessAsync("Session supprimée avec succès.");
+            }
+            catch (Exception ex)
             {
-                return;
+                await _notificationService.ShowErrorAsync("Erreur lors de la suppression de la session : " + ex.Message);
             }
-
-            await _drawingSessionService.DeleteSessionAsync(session);
-            DrawingSessions.Remove(session);
-            FilterSessions();
         }
 
         private async Task OnStartOrReplaySessionAsync(DrawingSession session)
         {
-            if (session == null)
+            try
             {
-                throw new ArgumentNullException(nameof(session));
-            }
+                if (session == null)
+                {
+                    throw new ArgumentNullException(nameof(session));
+                }
 
-            if (!session.CanStart())
-            {
-                await Shell.Current.DisplayAlert("Erreur", "La session ne contient aucune image.", "OK");
-                return;
-            }
+                if (!session.CanStart())
+                {
+                    await _notificationService.ShowWarningAsync("La session ne contient aucune image.");
+                    return;
+                }
 
-            if (session.IsCompleted)
-            {
-                session.IsCompleted = false;
-                await _drawingSessionService.AddOrUpdateSessionAsync(session);
-                await Shell.Current.Navigation.PushAsync(new DrawingSessionPage(session));
+                if (session.IsCompleted)
+                {
+                    session.IsCompleted = false;
+                    await _drawingSessionService.AddOrUpdateSessionAsync(session);
+                    await Shell.Current.Navigation.PushAsync(new DrawingSessionPage(session));
+                }
+                else
+                {
+                    await Shell.Current.Navigation.PushAsync(new DrawingSessionPage(session));
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await Shell.Current.Navigation.PushAsync(new DrawingSessionPage(session));
+                await _notificationService.ShowErrorAsync("Erreur lors du démarrage ou du replay de la session : " + ex.Message);
             }
         }
     }

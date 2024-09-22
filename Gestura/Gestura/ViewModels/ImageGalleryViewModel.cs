@@ -1,4 +1,5 @@
 ﻿using Gestura.Commons;
+using Gestura.Interfaces;
 using Gestura.Models;
 using Gestura.Services;
 using System.Collections.ObjectModel;
@@ -8,7 +9,8 @@ namespace Gestura.ViewModels
 {
     public class ImageGalleryViewModel : BaseViewModel
     {
-        private readonly ImageService _imageService;
+        private readonly IImageService _imageService;
+        private readonly INotificationService _notificationService;
 
         private ObservableCollection<ImageReference> _imageReferences;
         public ObservableCollection<ImageReference> ImageReferences
@@ -46,8 +48,9 @@ namespace Gestura.ViewModels
         public ICommand ImportImageFromUrlCommand { get; }
         public ICommand DeleteImageCommand { get; }
 
-        public ImageGalleryViewModel(ImageService imageService)
+        public ImageGalleryViewModel(IImageService imageService, INotificationService notificationService)
         {
+            _notificationService = notificationService;
             _imageService = imageService;
             ImageReferences = new ObservableCollection<ImageReference>();
 
@@ -72,21 +75,30 @@ namespace Gestura.ViewModels
 
         private async Task OnImportMethodChangedAsync()
         {
-            if (SelectedImportMethod == ImportMethodEnum.LocalStorage.ToString())
+            try
             {
-                await OnImportImageFromLocalAsync();
-            }
-            else if (SelectedImportMethod == ImportMethodEnum.UrlWeb.ToString())
-            {
-                await Shell.Current.DisplayPromptAsync("Importer une image", "Collez l'URL de l'image :", "OK", "Annuler", "https://")
-                    .ContinueWith(async urlTask =>
-                    {
-                        var url = await urlTask;
-                        if (!string.IsNullOrWhiteSpace(url))
+                if (SelectedImportMethod == ImportMethodEnum.LocalStorage.ToString())
+                {
+                    await OnImportImageFromLocalAsync();
+                }
+                else if (SelectedImportMethod == ImportMethodEnum.UrlWeb.ToString())
+                {
+                    await Shell.Current.DisplayPromptAsync("Importer une image", "Collez l'URL de l'image :", "OK", "Annuler", "https://")
+                        .ContinueWith(async urlTask =>
                         {
-                            await OnImportImageFromUrlAsync(url);
-                        }
-                    });
+                            var url = await urlTask;
+                            if (!string.IsNullOrWhiteSpace(url))
+                            {
+                                await OnImportImageFromUrlAsync(url);
+                            }
+                        });
+                }
+
+                await _notificationService.ShowSuccessAsync("L'image a été importée avec succès.");
+            }
+            catch (Exception ex)
+            {
+                await _notificationService.ShowErrorAsync("Erreur lors de l'importation de l'image." + ex.Message);
             }
         }
 
@@ -115,14 +127,22 @@ namespace Gestura.ViewModels
 
         private async Task OnDeleteImageAsync(ImageReference imageReference)
         {
-            var result = await _imageService.DeleteImageAsync(imageReference);
-            if (result)
+            try
             {
-                var image = ImageReferences.FirstOrDefault(i => i == imageReference);
-                if (image != null)
+                var result = await _imageService.DeleteImageAsync(imageReference);
+                if (result)
                 {
-                    ImageReferences.Remove(image);
+                    var image = ImageReferences.FirstOrDefault(i => i == imageReference);
+                    if (image != null)
+                    {
+                        ImageReferences.Remove(image);
+                        await _notificationService.ShowSuccessAsync("Image supprimée avec succès.");
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                await _notificationService.ShowErrorAsync("Erreur lors de la suppression de l'image : " + ex.Message);
             }
         }
 
@@ -148,10 +168,17 @@ namespace Gestura.ViewModels
 
         private async void LoadImages()
         {
-            var existingImages = await _imageService.GetAllImagesAsync();
-            foreach (var image in existingImages)
+            try
             {
-                ImageReferences.Add(image);
+                var existingImages = await _imageService.GetAllImagesAsync();
+                foreach (var image in existingImages)
+                {
+                    ImageReferences.Add(image);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _notificationService.ShowErrorAsync("Erreur lors de la récupération des images de référence : " + ex.Message);
             }
         }
     }

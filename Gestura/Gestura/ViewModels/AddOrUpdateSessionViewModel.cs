@@ -1,4 +1,5 @@
-﻿using Gestura.Models;
+﻿using Gestura.Interfaces;
+using Gestura.Models;
 using Gestura.Views;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -7,6 +8,7 @@ namespace Gestura.ViewModels
 {
     public class AddOrUpdateSessionViewModel : BaseViewModel
     {
+        private readonly IImageService _imageService;
         private readonly DrawingSessionManagerViewModel _parentViewModel;
 
         private DrawingSession _session;
@@ -53,8 +55,9 @@ namespace Gestura.ViewModels
         public ICommand SaveSessionCommand { get; }
         public ICommand CancelCommand { get; }
 
-        public AddOrUpdateSessionViewModel(DrawingSessionManagerViewModel parentViewModel, DrawingSession session = null)
+        public AddOrUpdateSessionViewModel(IImageService imageService, DrawingSessionManagerViewModel parentViewModel, DrawingSession session = null)
         {
+            _imageService = imageService;
             _parentViewModel = parentViewModel;
             IsEditMode = session != null;
 
@@ -93,8 +96,8 @@ namespace Gestura.ViewModels
         {
             var tcs = new TaskCompletionSource<IEnumerable<ImageReference>>();
 
-            var imageSelectionPage = new ImageSelectionPage(_session.SelectedImages);
-            imageSelectionPage.BindingContext = new ImageSelectionViewModel(_session.SelectedImages);
+            var imageSelectionPage = new ImageSelectionPage(_imageService, _session.SelectedImages);
+            imageSelectionPage.BindingContext = new ImageSelectionViewModel(_imageService, _session.SelectedImages);
 
             var viewModel = imageSelectionPage.BindingContext as ImageSelectionViewModel;
             viewModel.ImagesSelected += (sender, selectedImages) =>

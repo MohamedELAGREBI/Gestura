@@ -3,15 +3,15 @@ using Gestura.Models;
 
 namespace Gestura.Services
 {
-    public class DrawingSessionService
+    public class DrawingSessionService : IDrawingSessionService
     {
         private readonly IDrawingSessionRepository _drawingSessionRepository;
         private readonly IDrawingSessionImageReferenceRepository _relationImageRepository;
 
-        public DrawingSessionService()
+        public DrawingSessionService(IDrawingSessionRepository drawingSessionRepository, IDrawingSessionImageReferenceRepository relationRepository)
         {
-            _drawingSessionRepository = MauiProgram.Services.GetService<IDrawingSessionRepository>();
-            _relationImageRepository = MauiProgram.Services.GetService<IDrawingSessionImageReferenceRepository>();
+            _drawingSessionRepository = drawingSessionRepository ?? throw new ArgumentNullException(nameof(drawingSessionRepository));
+            _relationImageRepository = relationRepository ?? throw new ArgumentNullException(nameof(relationRepository));
         }
 
         public async Task<List<DrawingSession>> GetSessionsAsync()

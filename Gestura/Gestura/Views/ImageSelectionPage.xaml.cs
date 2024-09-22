@@ -1,3 +1,4 @@
+using Gestura.Interfaces;
 using Gestura.Models;
 using Gestura.ViewModels;
 
@@ -5,10 +6,10 @@ namespace Gestura.Views;
 
 public partial class ImageSelectionPage : ContentPage
 {
-    public ImageSelectionPage(IEnumerable<ImageReference> sessionImages)
+    public ImageSelectionPage(IImageService imageService, IEnumerable<ImageReference> sessionImages)
     {
         InitializeComponent();
-        BindingContext = new ImageSelectionViewModel(sessionImages);
+        BindingContext = new ImageSelectionViewModel(imageService, sessionImages);
     }
 
     private void OnConfirmSelectionClicked(object sender, EventArgs e)

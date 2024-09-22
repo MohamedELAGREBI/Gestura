@@ -1,21 +1,16 @@
 ﻿using Gestura.Interfaces;
 using Gestura.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gestura.Services
 {
-    public class ImageService
+    public class ImageService : IImageService
     {
         private readonly string _imageFolderPath;
         private readonly IImageRepository _imageRepository;
 
-        public ImageService()
+        public ImageService(IImageRepository imageRepository)
         {
-            _imageRepository = MauiProgram.Services.GetService<IImageRepository>();
+            _imageRepository = imageRepository ?? throw new ArgumentNullException(nameof(imageRepository));
             _imageFolderPath = Path.Combine(FileSystem.AppDataDirectory, "Images");
 
             if (!Directory.Exists(_imageFolderPath))
@@ -23,8 +18,6 @@ namespace Gestura.Services
                 Directory.CreateDirectory(_imageFolderPath);
             }
         }
-
-        //var filePath = "https://i.pinimg.com/564x/91/2d/6f/912d6f086b9080aba5706fc98ce6e9ba.jpg";
 
         public async Task<ImageReference> ImportImageFromLocalAsync()
         {

@@ -33,8 +33,9 @@ namespace Gestura
             builder.Services.AddSingleton<IDrawingSessionRepository, DrawingSessionRepository>();
             builder.Services.AddSingleton<IDrawingSessionImageReferenceRepository, DrawingSessionImageReferenceRepository>();
 
-            builder.Services.AddSingleton<ImageService>();
-            builder.Services.AddSingleton<DrawingSessionService>();
+            builder.Services.AddSingleton<IImageService, ImageService>();
+            builder.Services.AddSingleton<IDrawingSessionService, DrawingSessionService>();
+            builder.Services.AddSingleton<INotificationService, NotificationService>();
 
             // ViewModels
             builder.Services.AddTransient<HomeViewModel>();
