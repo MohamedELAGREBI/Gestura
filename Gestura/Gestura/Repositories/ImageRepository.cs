@@ -33,13 +33,14 @@ namespace Gestura.Repositories
         {
             if (image.Id == 0)
             {
+                image.CreatedAt = DateTime.Now;
                 image.UpdatedAt = DateTime.Now;
-                return _database.UpdateAsync(image);
+                return _database.InsertAsync(image);
             }
             else
             {
-                image.UpdatedAt = image.CreatedAt;
-                return _database.InsertAsync(image);
+                image.UpdatedAt = DateTime.Now;
+                return _database.UpdateAsync(image);
             }
         }
     }

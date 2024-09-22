@@ -11,26 +11,26 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <StackLayout Padding="10">
-        <!-- Picker pour sélectionner la méthode d'importation -->
-        <Grid VerticalOptions="Start">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+    <ScrollView>
 
-            <Picker x:Name="ImportMethodPicker"
+        <StackLayout Padding="10">
+            <!-- Picker pour sélectionner la méthode d'importation -->
+            <Grid VerticalOptions="Start">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Picker x:Name="ImportMethodPicker"
                 Title="Importer des images"
                 ItemsSource="{Binding ImportMethods}"
                 SelectedItem="{Binding SelectedImportMethod, Mode=TwoWay}"
                 Grid.Column="0"/>
 
-            <Button Text="Importer" 
+                <Button Text="Importer" 
                     Command="{Binding ImportCommand}"
                     Grid.Column="1"/>
-        </Grid>
-
-        <ScrollView>
+            </Grid>
 
             <CollectionView ItemsSource="{Binding ImageReferences}"
                         EmptyView="Ajoutez des images, la galerie est vide.">
@@ -60,15 +60,21 @@
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Image Source="{Binding FilePath}"
-                           Aspect="AspectFill"
-                           HeightRequest="150"
-                           WidthRequest="150"/>
+                        <StackLayout>
+                            <Image Source="{Binding FilePath}"
+                                   Aspect="AspectFill"
+                                   HeightRequest="150"
+                                   WidthRequest="150"/>
+
+                            <Button Text="X"
+                                    Command="{Binding BindingContext.DeleteImageCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                    CommandParameter="{Binding .}"/>
+                        </StackLayout>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-        </ScrollView>
-    </StackLayout>
+        </StackLayout>
 
+    </ScrollView>
 </ContentPage>

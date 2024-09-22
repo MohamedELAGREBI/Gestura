@@ -1,4 +1,4 @@
-﻿using Gestura.Models;
+﻿ using Gestura.Models;
 using SQLite;
 
 namespace Gestura.Services

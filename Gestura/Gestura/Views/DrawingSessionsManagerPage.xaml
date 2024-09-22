@@ -14,44 +14,60 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <StackLayout Padding="10">
-        <Button Text="+" Command="{Binding AddNewSessionCommand}" HorizontalOptions="End"/>
+    <ScrollView Padding="10">
+        <StackLayout>
+            <Button Text="+" Command="{Binding AddNewSessionCommand}" HorizontalOptions="End"/>
 
-            <SearchBar Placeholder="Rechercher des sessions"
+            <SearchBar Placeholder="Rechercher une session ..."
                    Text="{Binding SearchQuery}"
                    SearchCommand="{Binding SearchCommand}"/>
-        
-        <CollectionView ItemsSource="{Binding FilteredDrawingSessions}"
+
+            <CollectionView ItemsSource="{Binding FilteredDrawingSessions}"
                         SelectionMode="None">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame HasShadow="True" Margin="5" Padding="10">
-                        <StackLayout>
-                            <Label Text="{Binding Title}"
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="10" Margin="5">
+                            <StackLayout>
+                                <Label Text="{Binding Title}"
                                    FontAttributes="{Binding IsCompleted, Converter={StaticResource CompletedToItalicConverter}}"
                                    Opacity="{Binding IsCompleted, Converter={StaticResource CompletedToOpacityConverter}}"
-                                   FontSize="Medium"/>
+                                   FontSize="Large"/>
 
-                            <Label Text="{Binding CreatedAt, StringFormat='{}{0:dd/MM/yyyy}'}" FontSize="Small"/>
+                                <StackLayout Orientation="Horizontal" Spacing="5">
+                                    <Label Text="Durée " FontAttributes="Bold"/>
+                                    <Label Text="{Binding PoseDuration}"/>
+                                </StackLayout>
 
-                            <StackLayout Orientation="Horizontal" HorizontalOptions="End">
-                                <Button Text="Modifier"
+                                <StackLayout Orientation="Horizontal" Spacing="5">
+                                    <Label Text="Dernière mise à jour : " FontAttributes="Bold"/>
+                                    <Label Text="{Binding LastUpdateAt, StringFormat='{0:dd/MM/yyyy}'}"/>
+                                </StackLayout>
+
+                                <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                                    <Button Text="Modifier"
                                         Command="{Binding Source={x:Reference DrawingSessionManagerPage}, Path=BindingContext.EditSessionCommand}"
-                                        CommandParameter="{Binding .}"/>
+                                        CommandParameter="{Binding .}"
+                                        TextColor="White"
+                                        Margin="5"/>
 
-                                <Button Text="Supprimer"
+                                    <Button Text="Supprimer"
                                         Command="{Binding Source={x:Reference DrawingSessionManagerPage}, Path=BindingContext.DeleteSessionCommand}"
-                                        CommandParameter="{Binding .}"/>
+                                        CommandParameter="{Binding .}"
+                                        TextColor="White"
+                                        Margin="5"/>
 
-                                <Button Text="{Binding IsCompleted, Converter={StaticResource CompletedToReplayTextConverter}}"
+                                    <Button Text="{Binding IsCompleted, Converter={StaticResource CompletedToReplayTextConverter}}"
                                         Command="{Binding Source={x:Reference DrawingSessionManagerPage}, Path=BindingContext.StartOrReplaySessionCommand}"
-                                        CommandParameter="{Binding .}"/>
+                                        CommandParameter="{Binding .}"
+                                        TextColor="White"
+                                        Margin="5"/>
+                                </StackLayout>
                             </StackLayout>
-                        </StackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </StackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </StackLayout>
+    </ScrollView>
 
 </ContentPage>

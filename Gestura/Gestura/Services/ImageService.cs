@@ -21,82 +21,98 @@ namespace Gestura.Services
 
         public async Task<ImageReference> ImportImageFromLocalAsync()
         {
-            try
+            var result = await FilePicker.PickAsync(new PickOptions
             {
-                var result = await FilePicker.PickAsync(new PickOptions
+                PickerTitle = "Sélectionner une image",
+                FileTypes = FilePickerFileType.Images
+            });
+
+            if (result == null)
+            {
+                throw new InvalidDataException("Erreur lors de la récupération du fichier dans le stockage local.");
+            }
+
+            using (var stream = await result.OpenReadAsync())
+            {
+                var filePath = Path.Combine(_imageFolderPath, result.FileName);
+
+                if (File.Exists(filePath))
                 {
-                    PickerTitle = "Sélectionner une image",
-                    FileTypes = FilePickerFileType.Images
-                });
+                    throw new InvalidDataException("Le fichier existe déjà.");
+                }
 
-                if (result != null)
+                await SaveImageFileAsync(filePath, stream);
+
+                var imageReference = new ImageReference
                 {
-                    using (var stream = await result.OpenReadAsync())
-                    {
-                        var filePath = Path.Combine(_imageFolderPath, result.FileName);
-                        await SaveImageFileAsync(filePath, stream);
+                    FileName = result.FileName,
+                    FilePath = filePath,
+                    CreatedAt = DateTime.Now,
+                };
 
-                        // Création de l'objet ImageReference et sauvegarde dans SQLite
-                        var imageReference = new ImageReference
-                        {
-                            FileName = result.FileName,
-                            FilePath = filePath,
-                            CreatedAt = DateTime.Now,
-                        };
-
-                        await _imageRepository.SaveImageAsync(imageReference);
-                        return imageReference;
-                    }
+                var saveResult = await _imageRepository.SaveImageAsync(imageReference);
+                if (saveResult > 0)
+                {
+                    return imageReference;
+                }
+                else
+                {
+                    File.Delete(filePath);
+                    throw new InvalidDataException("Échec de la sauvegarde de l'image en base de données.");
                 }
             }
-            catch (Exception ex)
-            {
-                // message = $"Erreur lors de l'importation de l'image : {ex.Message}"
-                throw;
-            }
-
-            return null;
         }
 
         public async Task<ImageReference> ImportImageFromUrlAsync(string imageUrl)
         {
-            try
+            if (string.IsNullOrWhiteSpace(imageUrl))
             {
-                using (var client = new HttpClient())
+                throw new ArgumentNullException(nameof(imageUrl));
+            }
+
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync(imageUrl);
+                if (!response.IsSuccessStatusCode)
                 {
-                    var response = await client.GetAsync(imageUrl);
-                    if (response.IsSuccessStatusCode)
+                    throw new InvalidOperationException($"Échec du téléchargement de l'image depuis l'URL : {imageUrl}");
+                }
+
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                {
+                    var fileName = Path.GetFileName(new Uri(imageUrl).LocalPath);
+                    if (string.IsNullOrWhiteSpace(fileName))
                     {
-                        using (var stream = await response.Content.ReadAsStreamAsync())
-                        {
-                            var fileName = Path.GetFileName(new Uri(imageUrl).LocalPath);
-                            if (string.IsNullOrWhiteSpace(fileName))
-                            {
-                                fileName = Guid.NewGuid().ToString().ToUpperInvariant() + ".jpg";
-                            }
-                            var filePath = Path.Combine(_imageFolderPath, fileName);
-                            await SaveImageFileAsync(filePath, stream);
+                        fileName = Guid.NewGuid().ToString().ToUpperInvariant() + ".jpg";
+                    }
+                    var filePath = Path.Combine(_imageFolderPath, fileName);
 
-                            var imageReference = new ImageReference
-                            {
-                                FileName = fileName,
-                                FilePath = filePath,
-                                CreatedAt = DateTime.Now,
-                            };
+                    if (File.Exists(filePath))
+                    {
+                        throw new InvalidDataException("Le fichier existe déjà.");
+                    }
 
-                            await _imageRepository.SaveImageAsync(imageReference);
-                            return imageReference;
-                        }
+                    await SaveImageFileAsync(filePath, stream);
+
+                    var imageReference = new ImageReference
+                    {
+                        FileName = fileName,
+                        FilePath = filePath,
+                        CreatedAt = DateTime.Now,
+                    };
+
+                    var saveResult = await _imageRepository.SaveImageAsync(imageReference);
+                    if (saveResult > 0)
+                    {
+                        return imageReference;
+                    }
+                    else
+                    {
+                        File.Delete(filePath);
+                        throw new InvalidDataException("Échec de la sauvegarde de l'image en base de données.");
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                // message = $"Erreur lors du téléchargement de l'image : {ex.Message}"
-                throw;
-            }
-
-            return null;
         }
 
         private async Task SaveImageFileAsync(string filePath, Stream stream)
@@ -109,33 +125,23 @@ namespace Gestura.Services
 
         public async Task<List<ImageReference>> GetAllImagesAsync()
         {
-            var images = new List<ImageReference>();
-            if (Directory.Exists(_imageFolderPath))
-            {
-                var files = Directory.GetFiles(_imageFolderPath);
-                foreach (var file in files)
-                {
-                    images.Add(new ImageReference { FileName = Guid.NewGuid().ToString().ToUpperInvariant() + ".jpg", FilePath = file });
-                }
-            }
-
-            return await Task.FromResult(images);
+            return await _imageRepository.GetAllImagesAsync();
         }
 
         public async Task<bool> DeleteImageAsync(ImageReference image)
         {
-            if (image != null)
+            if (image == null)
             {
-                if (File.Exists(image.FilePath))
-                {
-                    File.Delete(image.FilePath);
-                }
-
-                await _imageRepository.DeleteImageAsync(image);
-                return true;
+                throw new ArgumentNullException(nameof(image));
             }
 
-            return false;
+            if (File.Exists(image.FilePath))
+            {
+                File.Delete(image.FilePath);
+            }
+
+            var deleteResult = await _imageRepository.DeleteImageAsync(image) > 0;
+            return deleteResult;
         }
 
 
