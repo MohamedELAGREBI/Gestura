@@ -53,7 +53,6 @@ namespace Gestura.ViewModels
 
             ImportMethods = new ObservableCollection<string>
             {
-                "Choisissez une méthode d'importation d'image", // Placeholder
                 ImportMethodEnum.LocalStorage.ToString(),
                 ImportMethodEnum.UrlWeb.ToString()
             };

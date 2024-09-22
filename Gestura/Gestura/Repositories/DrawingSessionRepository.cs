@@ -8,10 +8,12 @@ namespace Gestura.Repositories
     public class DrawingSessionRepository : IDrawingSessionRepository
     {
         private readonly SQLiteAsyncConnection _database;
+        private readonly IDrawingSessionImageReferenceRepository _relationRepository;
 
         public DrawingSessionRepository()
         {
             _database = MauiProgram.Services.GetService<DatabaseService>().GetConnection();
+            _relationRepository = MauiProgram.Services.GetService<IDrawingSessionImageReferenceRepository>();
         }
 
         public async Task<int> DeleteSessionAsync(DrawingSession drawingSession)
@@ -21,12 +23,21 @@ namespace Gestura.Repositories
 
         public async Task<List<DrawingSession>> GetAllDrawingSessionsAsync()
         {
-            return await _database.Table<DrawingSession>().ToListAsync();
+            var sessions = await _database.Table<DrawingSession>().ToListAsync();
+            foreach (var session in sessions)
+            {
+                var sessionImages = await _relationRepository.GetImagesForSessionAsync(session.Id);
+                session.SelectedImages = sessionImages;
+            }
+
+            return sessions;
         }
 
         public async Task<DrawingSession> GetDrawingSessionByIdAsync(int id)
         {
-            return await _database.Table<DrawingSession>().Where(s => s.Id == id).FirstOrDefaultAsync();
+            var session = await _database.Table<DrawingSession>().Where(s => s.Id == id).FirstOrDefaultAsync();
+            session.SelectedImages = await _relationRepository.GetImagesForSessionAsync(id);
+            return session;
         }
 
         public async Task<int> SaveSessionAsync(DrawingSession drawingSession)

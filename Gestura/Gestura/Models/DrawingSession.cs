@@ -47,8 +47,7 @@ namespace Gestura.Models
 
         public bool CanStart()
         {
-            //return SelectedImages != null && SelectedImages.Count > 0;
-            return true;
+            return SelectedImages != null && SelectedImages.Count > 0;
         }
     }
 }

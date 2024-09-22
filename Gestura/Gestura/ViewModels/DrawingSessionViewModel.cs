@@ -213,7 +213,7 @@ namespace Gestura.ViewModels
             StopTimer();
             StopControlVisibilityTimer();
             _currentSession.IsCompleted = true;
-            await _drawingSessionService.UpdateSessionAsync(_currentSession);
+            await _drawingSessionService.AddOrUpdateSessionAsync(_currentSession);
 
             // TODO : Gerer l'opacitéde la dernière image et afficher une alerte 
         }

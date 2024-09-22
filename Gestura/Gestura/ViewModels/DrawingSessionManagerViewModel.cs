@@ -74,12 +74,12 @@ namespace Gestura.ViewModels
 
         private async Task OnAddNewSessionAsync()
         {
-            await Shell.Current.Navigation.PushModalAsync(new CreateSessionPage(this));
+            await Shell.Current.Navigation.PushModalAsync(new AddOrUpdateSessionPage(this, null));
         }
 
         public async Task AddSessionAsync(DrawingSession session)
         {
-            await _drawingSessionService.AddSessionAsync(session);
+            await _drawingSessionService.AddOrUpdateSessionAsync(session);
             DrawingSessions.Add(session);
 
             FilterSessions();
@@ -92,12 +92,12 @@ namespace Gestura.ViewModels
                 throw new ArgumentNullException(nameof(session));
             }
 
-            await Shell.Current.Navigation.PushModalAsync(new UpdateSessionPage(session, this));
+            await Shell.Current.Navigation.PushModalAsync(new AddOrUpdateSessionPage(this, session));
         }
 
         public async Task UpdateSessionAsync(DrawingSession session)
         {
-            await _drawingSessionService.UpdateSessionAsync(session);
+            await _drawingSessionService.AddOrUpdateSessionAsync(session);
 
             var index = DrawingSessions.IndexOf(DrawingSessions.FirstOrDefault(s => s.Id == session.Id));
             if (index >= 0)
@@ -133,7 +133,7 @@ namespace Gestura.ViewModels
                 throw new ArgumentNullException(nameof(session));
             }
 
-            if (!session.SelectedImages.Any())
+            if (!session.CanStart())
             {
                 await Shell.Current.DisplayAlert("Erreur", "La session ne contient aucune image.", "OK");
                 return;
@@ -142,7 +142,7 @@ namespace Gestura.ViewModels
             if (session.IsCompleted)
             {
                 session.IsCompleted = false;
-                await _drawingSessionService.UpdateSessionAsync(session);
+                await _drawingSessionService.AddOrUpdateSessionAsync(session);
                 await Shell.Current.Navigation.PushAsync(new DrawingSessionPage(session));
             }
             else

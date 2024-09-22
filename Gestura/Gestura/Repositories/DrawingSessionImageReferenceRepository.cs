@@ -32,6 +32,13 @@ namespace Gestura.Repositories
                 drawingSessionId, imageReferenceId);
         }
 
+        public async Task<int> DeleteRelationsBySessionIdAsync(int drawingSessionId)
+        {
+            return await _database.ExecuteAsync(
+                "DELETE FROM DRAWING_SESSION_IMAGE_REFERENCE WHERE DrawingSessionId = ?",
+                drawingSessionId);
+        }
+
         public async Task<List<ImageReference>> GetImagesForSessionAsync(int drawingSessionId)
         {
             var query = @"SELECT IMAGE_REFERENCES.* FROM IMAGE_REFERENCES

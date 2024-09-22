@@ -38,11 +38,11 @@ namespace Gestura
 
             // ViewModels
             builder.Services.AddTransient<HomeViewModel>();
-            builder.Services.AddTransient<CreateSessionViewModel>();
-            builder.Services.AddTransient<UpdateSessionViewModel>();
+            builder.Services.AddTransient<AddOrUpdateSessionViewModel>();
             builder.Services.AddTransient<DrawingSessionViewModel>();
             builder.Services.AddTransient<DrawingSessionManagerViewModel>();
             builder.Services.AddTransient<ImageGalleryViewModel>();
+            builder.Services.AddTransient<ImageSelectionViewModel>();
 
             var app = builder.Build();
             _serviceProvider = app.Services;

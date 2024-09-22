@@ -19,14 +19,26 @@ namespace Gestura.Services
             return await _drawingSessionRepository.GetAllDrawingSessionsAsync();
         }
 
-        public async Task<bool> AddSessionAsync(DrawingSession drawingSession)
+        public async Task<bool> AddOrUpdateSessionAsync(DrawingSession drawingSession)
         {
-            return await _drawingSessionRepository.SaveSessionAsync(drawingSession) > 0;
-        }
+            var isSessionSaved = await _drawingSessionRepository.SaveSessionAsync(drawingSession) > 0;
 
-        public async Task<bool> UpdateSessionAsync(DrawingSession drawingSession)
-        {
-            return await _drawingSessionRepository.SaveSessionAsync(drawingSession) > 0;
+            if (!isSessionSaved)
+            {
+                return false;
+            }
+
+            if (drawingSession.Id > 0)
+            {
+                await _relationImageRepository.DeleteRelationsBySessionIdAsync(drawingSession.Id);
+            }
+
+            foreach (var image in drawingSession.SelectedImages)
+            {
+                await _relationImageRepository.AddRelationAsync(drawingSession.Id, image.Id);
+            }
+
+            return true;
         }
 
         public async Task<bool> DeleteSessionAsync(DrawingSession drawingSession)

@@ -13,53 +13,62 @@
 
     <StackLayout Padding="10">
         <!-- Picker pour sélectionner la méthode d'importation -->
-        <HorizontalStackLayout>
+        <Grid VerticalOptions="Start">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
             <Picker x:Name="ImportMethodPicker"
                 Title="Importer des images"
                 ItemsSource="{Binding ImportMethods}"
-                SelectedItem="{Binding SelectedImportMethod, Mode=TwoWay}"/>
+                SelectedItem="{Binding SelectedImportMethod, Mode=TwoWay}"
+                Grid.Column="0"/>
 
-            <Button Text="Importer" Command="{Binding ImportCommand}"/>
-        </HorizontalStackLayout>
+            <Button Text="Importer" 
+                    Command="{Binding ImportCommand}"
+                    Grid.Column="1"/>
+        </Grid>
 
+        <ScrollView>
 
-
-        <CollectionView ItemsSource="{Binding ImageReferences}"
+            <CollectionView ItemsSource="{Binding ImageReferences}"
                         EmptyView="Ajoutez des images, la galerie est vide.">
 
-            <CollectionView.EmptyViewTemplate>
-                <DataTemplate>
-                    <ContentView>
-                        <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                            <Label Text="Aucune image disponible"
+                <CollectionView.EmptyViewTemplate>
+                    <DataTemplate>
+                        <ContentView>
+                            <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="Aucune image disponible"
                                    FontAttributes="Bold"
                                    HorizontalOptions="Center"/>
 
-                            <Button Text="Ajouter une image"
+                                <Button Text="Ajouter une image"
                                     Command="{Binding ImportImageFromLocalCommand}"
                                     HorizontalOptions="Center"/>
-                        </StackLayout>
-                    </ContentView>
-                </DataTemplate>
-            </CollectionView.EmptyViewTemplate>
+                            </StackLayout>
+                        </ContentView>
+                    </DataTemplate>
+                </CollectionView.EmptyViewTemplate>
 
-            <CollectionView.ItemsLayout>
-                <GridItemsLayout Orientation="Vertical"
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical"
                                  Span="{Binding ColumnCount}"
                                  VerticalItemSpacing="10"
                                  HorizontalItemSpacing="10"/>
-            </CollectionView.ItemsLayout>
+                </CollectionView.ItemsLayout>
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Image Source="{Binding FilePath}"
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Image Source="{Binding FilePath}"
                            Aspect="AspectFill"
                            HeightRequest="150"
                            WidthRequest="150"/>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
+        </ScrollView>
     </StackLayout>
 
 </ContentPage>
