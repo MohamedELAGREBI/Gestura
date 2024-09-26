@@ -24,6 +24,7 @@ namespace Gestura.ViewModels
         public ICommand CancelCommand { get; }
         public ICommand AddSelectedImageCommand { get; }
         public ICommand RemoveImageCommand { get; }
+        public ICommand ToggleImageSelectionCommand { get; }
 
         public event EventHandler<IEnumerable<ImageReference>> ImagesSelected;
 
@@ -41,6 +42,7 @@ namespace Gestura.ViewModels
             CancelCommand = new Command(async () => await OnCancelAsync());
             AddSelectedImageCommand = new Command(OnAddSelectedImage);
             RemoveImageCommand = new Command<ImageReference>(OnRemoveImage);
+            ToggleImageSelectionCommand = new Command<ImageReference>(OnToggleImageSelection);
         }
 
         private async void LoadAvailableImages()
@@ -78,6 +80,24 @@ namespace Gestura.ViewModels
             if (SelectedSessionImages.Contains(image))
             {
                 SelectedSessionImages.Remove(image);
+            }
+        }
+
+        private void OnToggleImageSelection(ImageReference image)
+        {
+            if (image != null)
+            {
+                // Si l'image est déjà sélectionnée, la retirer
+                if (SelectedSessionImages.Contains(image))
+                {
+                    SelectedSessionImages.Remove(image);
+                }
+                else
+                {
+                    SelectedSessionImages.Add(image);
+                }
+
+                OnPropertyChanged(nameof(SelectedSessionImages));
             }
         }
     }

@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Gestura.Resources.Styles.ComponentStyle.EntryStyles">
+    <!-- Style par défaut pour les Entry -->
+    <Style TargetType="Entry" x:Key="DefaultEntryStyle">
+        <!-- Couleur d'arrière-plan neutre, claire pour une bonne lisibilité -->
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource DarkBackgroundDark1}, Dark={StaticResource PrimaryVeryLight}}" />
+
+        <!-- Couleur de texte et Placeholder pour qu'il soit bien visible -->
+        <Setter Property="TextColor" Value="{StaticResource PrimaryVeryDark}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource SecondaryVeryDark}" />
+
+        <!-- Gestion des états visuels (focus, normal) via VisualStateManager -->
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <Setter.Value>
+                <VisualStateGroupList>
+                    <!-- État normal (sans focus) -->
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+
+                        <!-- État Disabled (désactivé) -->
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <!-- Réduction de l'opacité et désactivation de l'interaction -->
+                                <Setter Property="Opacity" Value="0.5" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Entry" x:Key="SecondaryEntryStyle" BasedOn="{StaticResource DefaultEntryStyle}">
+        <!-- Arrière-plan légèrement différent pour un Entry secondaire -->
+        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryLight}" />
+        <Setter Property="TextColor" Value="{StaticResource SecondaryDark}" />
+    </Style>
+</ResourceDictionary>

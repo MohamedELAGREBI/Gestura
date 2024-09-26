@@ -11,70 +11,64 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <ScrollView>
+    <Grid RowSpacing="5" Style="{StaticResource SpacedGridStyle}">
+        <!-- Première ligne : fixe (Picker + bouton) -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <!-- Hauteur automatique pour le Picker et le bouton -->
+            <RowDefinition Height="*" />
+            <!-- Le contenu défilable prendra tout l'espace restant -->
+        </Grid.RowDefinitions>
 
-        <StackLayout Padding="10">
-            <!-- Picker pour sélectionner la méthode d'importation -->
-            <Grid VerticalOptions="Start">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Padding="10" Style="{StaticResource DefaultGridStyle}" BackgroundColor="{StaticResource Primary}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-                <Picker x:Name="ImportMethodPicker"
-                Title="Importer des images"
-                ItemsSource="{Binding ImportMethods}"
-                SelectedItem="{Binding SelectedImportMethod, Mode=TwoWay}"
-                Grid.Column="0"/>
+            <Picker x:Name="ImportMethodPicker"
+                    Title="Importer des images"
+                    ItemsSource="{Binding ImportMethods}"
+                    SelectedItem="{Binding SelectedImportMethod, Mode=TwoWay}"
+                    HorizontalOptions="FillAndExpand"
+                    Style="{StaticResource DefaultPickerStyle}"/>
 
-                <Button Text="Importer" 
+            <Button Text="Importer" 
                     Command="{Binding ImportCommand}"
-                    Grid.Column="1"/>
-            </Grid>
+                    Grid.Column="1"
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    HorizontalOptions="End"/>
+        </Grid>
 
-            <CollectionView ItemsSource="{Binding ImageReferences}"
-                        EmptyView="Ajoutez des images, la galerie est vide.">
+        <ScrollView Grid.Row="1" Padding="10">
 
-                <CollectionView.EmptyViewTemplate>
+            <!-- FlexLayout pour afficher les images -->
+            <FlexLayout Direction="Row"
+                    Wrap="Wrap"
+                    JustifyContent="Start"
+                    AlignItems="Start"
+                    BindableLayout.ItemsSource="{Binding ImageReferences}">
+
+                <!-- Modèle d'élément dans le FlexLayout -->
+                <BindableLayout.ItemTemplate>
                     <DataTemplate>
-                        <ContentView>
-                            <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                                <Label Text="Aucune image disponible"
-                                   FontAttributes="Bold"
-                                   HorizontalOptions="Center"/>
-
-                                <Button Text="Ajouter une image"
-                                    Command="{Binding ImportImageFromLocalCommand}"
-                                    HorizontalOptions="Center"/>
-                            </StackLayout>
-                        </ContentView>
-                    </DataTemplate>
-                </CollectionView.EmptyViewTemplate>
-
-                <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Vertical"
-                                 Span="{Binding ColumnCount}"
-                                 VerticalItemSpacing="10"
-                                 HorizontalItemSpacing="10"/>
-                </CollectionView.ItemsLayout>
-
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <StackLayout>
+                        <StackLayout Padding="10">
                             <Image Source="{Binding FilePath}"
-                                   Aspect="AspectFill"
-                                   HeightRequest="150"
-                                   WidthRequest="150"/>
+                               Aspect="AspectFill"
+                               HeightRequest="150"
+                               WidthRequest="150" />
 
+                            <!-- Bouton "X" pour suppression, prend juste la place nécessaire -->
                             <Button Text="X"
-                                    Command="{Binding BindingContext.DeleteImageCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                    CommandParameter="{Binding .}"/>
+                                Command="{Binding BindingContext.DeleteImageCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                CommandParameter="{Binding .}"
+                                Style="{StaticResource OutlineButtonSecondaryStyle}"
+                                HorizontalOptions="End" />
                         </StackLayout>
                     </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
 
-        </StackLayout>
-
-    </ScrollView>
+        </ScrollView>
+    </Grid>
 </ContentPage>

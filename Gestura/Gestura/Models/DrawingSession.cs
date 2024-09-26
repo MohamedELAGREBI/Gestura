@@ -36,6 +36,7 @@ namespace Gestura.Models
         {
             CreatedAt = DateTime.Now;
             LastUpdateAt = CreatedAt;
+            PoseDuration = new TimeSpan(0, 10, 0);
 
             if (string.IsNullOrWhiteSpace(Title))
             {

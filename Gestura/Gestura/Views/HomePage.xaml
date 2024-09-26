@@ -4,13 +4,13 @@
              x:Class="Gestura.Views.HomePage"
              Title="HomePage">
 
-    <StackLayout Padding="20" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
+    <StackLayout Padding="20" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Spacing="10">
         <Button Text="Sessions de Dessin"
                 Command="{Binding NavigateToDrawingSessionCommand}"
-                Margin="0,10"/>
+                Style="{StaticResource PrimaryButtonStyle}"/>
         <Button Text="Galerie d'images"
                 Command="{Binding NavigateToImageGalleryCommand}"
-                Margin="0,10"/>
+                Style="{StaticResource PrimaryButtonStyle}"/>
     </StackLayout>
     
 </ContentPage>

@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Gestura.Resources.Styles.ComponentStyle.SearchBarStyles">
+    <!-- Style par défaut pour la SearchBar -->
+    <Style TargetType="SearchBar" x:Key="DefaultSearchBarStyle">
+        <!-- Couleur d'arrière-plan neutre, responsive aux thèmes clair et sombre -->
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightBackgroundLight2}, Dark={StaticResource LightBackgroundLight1}}" />
+
+        <!-- Texte et icône de la SearchBar -->
+        <Setter Property="TextColor" Value="{StaticResource PrimaryVeryDark}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource SecondaryVeryDark}" />
+        <Setter Property="FontSize" Value="16" />
+
+        <!-- Feedback visuel avec VisualStateManager pour le focus et l'état normal -->
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <Setter.Value>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <!-- État normal -->
+                        <VisualState x:Name="Normal" />
+
+                        <!-- État Disabled (désactivé) -->
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <!-- Réduction de l'opacité et désactivation de l'interaction -->
+                                <Setter Property="Opacity" Value="0.5" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="SearchBar" x:Key="SecondarySearchBarStyle" BasedOn="{StaticResource DefaultSearchBarStyle}">
+        <!-- Arrière-plan légèrement différent pour un usage secondaire -->
+        <Setter Property="BackgroundColor" Value="{StaticResource SecondaryLight}" />
+        <Setter Property="TextColor" Value="{StaticResource SecondaryVeryDark}" />
+    </Style>
+</ResourceDictionary>

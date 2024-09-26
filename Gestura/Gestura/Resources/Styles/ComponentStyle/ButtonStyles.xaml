@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Gestura.Resources.Styles.ComponentStyle.ButtonStyles">
+    
+    <!-- Style par défaut pour tous les boutons -->
+    <Style TargetType="Button" x:Key="DefaultButtonStyle">
+        <!-- Espacement intérieur généreux pour rendre le bouton confortable -->
+        <Setter Property="Padding" Value="12,8" />
+        <!-- Padding pour la cliquabilité -->
+
+        <!-- Arrondi doux pour donner un aspect moderne -->
+        <Setter Property="CornerRadius" Value="8" />
+        <!-- Coin arrondi -->
+
+        <!-- Font par défaut pour les boutons -->
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="16" />
+        <!-- Taille de police claire -->
+
+        <!-- Ombre douce pour indiquer l'interaction (Matérial Design) -->
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="Black" Opacity="0.2" Offset="0,4" Radius="6" />
+            </Setter.Value>
+        </Setter>
+
+        <!-- Gestion des états visuels (survol, appui, etc.) -->
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <Setter.Value>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Pressed">
+                            <!-- Feedback visuel lors de l'appui (légère réduction d'opacité) -->
+                            <VisualState.Setters>
+                                <Setter Property="Opacity" Value="0.8" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <Setter Property="Opacity" Value="0.5" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" x:Key="PrimaryButtonStyle" BasedOn="{StaticResource DefaultButtonStyle}">
+        <!-- Couleur de fond pour les boutons principaux -->
+        <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+        <Setter Property="TextColor" Value="White" />
+        <!-- Texte en blanc pour contraste -->
+    </Style>
+
+    <Style TargetType="Button" x:Key="SecondaryButtonStyle" BasedOn="{StaticResource DefaultButtonStyle}">
+        <!-- Couleur de fond pour les boutons secondaires -->
+        <Setter Property="BackgroundColor" Value="{StaticResource Secondary}" />
+        <Setter Property="TextColor" Value="White" />
+    </Style>
+
+    <Style TargetType="Button" x:Key="TertiaryButtonStyle" BasedOn="{StaticResource DefaultButtonStyle}">
+        <!-- Couleur de fond pour les boutons secondaires -->
+        <Setter Property="BackgroundColor" Value="{StaticResource Tertiary}" />
+        <Setter Property="TextColor" Value="White" />
+    </Style>
+
+    <Style TargetType="Button" x:Key="OutlineButtonPrimaryStyle" BasedOn="{StaticResource DefaultButtonStyle}">
+        <!-- Fond transparent avec une bordure -->
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+        <Setter Property="BorderWidth" Value="2" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryDark}, Dark={StaticResource PrimaryLight}}" />
+    </Style>
+
+    <Style TargetType="Button" x:Key="OutlineButtonSecondaryStyle" BasedOn="{StaticResource DefaultButtonStyle}">
+        <!-- Fond transparent avec une bordure -->
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BorderColor" Value="{StaticResource Secondary}" />
+        <Setter Property="BorderWidth" Value="2" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryDark}, Dark={StaticResource SecondaryLight}}" />
+    </Style>
+
+    <Style TargetType="Button" x:Key="OutlineButtonTertiaryStyle" BasedOn="{StaticResource DefaultButtonStyle}">
+        <!-- Fond transparent avec une bordure -->
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BorderColor" Value="{StaticResource Tertiary}" />
+        <Setter Property="BorderWidth" Value="2" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TertiaryDark}, Dark={StaticResource TertiaryLight}}" />
+    </Style>
+
+</ResourceDictionary>

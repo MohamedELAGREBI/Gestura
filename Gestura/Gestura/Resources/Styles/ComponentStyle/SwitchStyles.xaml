@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Gestura.Resources.Styles.ComponentStyle.SwitchStyles">
+    <!-- Style par défaut pour les Toggles (Switches) -->
+    <Style TargetType="Switch" x:Key="DefaultToggleStyle">
+        <!-- Taille du Switch pour qu'il soit ergonomique et facile à activer -->
+        <Setter Property="HeightRequest" Value="30" />
+        <Setter Property="WidthRequest" Value="50" />
+
+        <!-- Couleurs de fond selon l'état du toggle (activé ou désactivé) -->
+        <Setter Property="OnColor" Value="{StaticResource Primary}" />
+        <Setter Property="ThumbColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+
+        <!-- Feedback visuel avec des changements de couleurs pour le mode activé ou désactivé -->
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <Setter.Value>
+                <VisualStateGroupList>
+                    <!-- État Normal (désactivé) -->
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <!-- Couleur du Thumb (handle) en mode désactivé -->
+                                <Setter Property="ThumbColor" Value="{StaticResource DarkBackgroundVeryDark5}" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <!-- État Focus (lorsque l'utilisateur interagit avec le toggle) -->
+                        <VisualState x:Name="Focused">
+                            <VisualState.Setters>
+                                <!-- Augmentation de la taille du Thumb pour indiquer l'état focus -->
+                                <Setter Property="Scale" Value="1.1" />
+                                <!-- Couleur plus vive lors du focus -->
+                                <Setter Property="ThumbColor" Value="{StaticResource Primary}" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <!-- État On (activé) -->
+                        <VisualState x:Name="On">
+                            <VisualState.Setters>
+                                <!-- Couleur du Thumb en mode activé -->
+                                <Setter Property="ThumbColor" Value="{StaticResource Secondary}" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <!-- État Disabled (désactivé) -->
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <!-- Couleur de fond lorsque le toggle est désactivé -->
+                                <Setter Property="BackgroundColor" Value="{StaticResource DarkBackgroundVeryDark5}" />
+                                <!-- Réduction de l'opacité pour indiquer que le toggle est désactivé -->
+                                <Setter Property="Opacity" Value="0.5" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

@@ -11,60 +11,131 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
+    <Grid Style="{StaticResource DefaultGridStyle}" Padding="80,20" RowSpacing="20" ColumnSpacing="20">
 
-    <ScrollView>
-        <StackLayout Padding="10">
-            <StackLayout>
-                <Entry Placeholder="Titre de la session" Text="{Binding Title}"/>
+        <!-- Container centré pour le Titre, Durée et Toggle "Sans limite" -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <!-- Section fixe -->
+            <RowDefinition Height="*" />
+            <!-- Section défilable -->
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <!-- Boutons fixes -->
+        </Grid.RowDefinitions>
 
+        <!-- Première partie : Titre, durée et switch sans limite (non-scrollable) -->
+        <StackLayout Grid.Row="0" 
+                     VerticalOptions="Center" 
+                     HorizontalOptions="Center"
+                     Spacing="20" 
+                     Padding="20" 
+                     BackgroundColor="{StaticResource LightBackground}">
 
-                <StackLayout Orientation="Horizontal" Spacing="10" Margin="0,10">
-                    <!-- Picker pour les heures -->
-                    <Label Text="Durée" Margin="0, 0, 10, 0"/>
-                    <Picker Title="Heures"
-                    ItemsSource="{Binding HoursOptions}"
-                    SelectedItem="{Binding SelectedHours}"
-                    WidthRequest="80" 
-                    IsEnabled="{Binding IsLimitless, Converter={StaticResource InverseBooleanConverter}}"/>
+            <!-- Champ de saisie pour le Titre -->
+            <Entry Placeholder="Titre de la session"
+                   Text="{Binding Title}" 
+                   Style="{StaticResource DefaultEntryStyle}" 
+                   HorizontalOptions="FillAndExpand" />
 
-                    <!-- Picker pour les minutes -->
-                    <Picker Title="Minutes"
-                    ItemsSource="{Binding MinutesOptions}"
-                    SelectedItem="{Binding SelectedMinutes}"
-                    WidthRequest="80" 
-                    IsEnabled="{Binding IsLimitless, Converter={StaticResource InverseBooleanConverter}}"/>
+            <!-- Sélection de la durée (heures, minutes, secondes) avec Grid pour l'alignement -->
+            <Grid Style="{StaticResource CompactGridStyle}" ColumnSpacing="10" RowSpacing="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-                    <!-- Picker pour les secondes -->
-                    <Picker Title="Secondes"
-                    ItemsSource="{Binding SecondsOptions}"
-                    SelectedItem="{Binding SelectedSeconds}"
-                    WidthRequest="80" 
-                    IsEnabled="{Binding IsLimitless, Converter={StaticResource InverseBooleanConverter}}"/>
-                </StackLayout>
-                <HorizontalStackLayout>
-                    <Label Text="Sans limite"/>
-                    <Switch IsToggled="{Binding IsLimitless}"/>
-                </HorizontalStackLayout>
+                <Label Grid.Column="0" Text="Durée" FontAttributes="Bold" VerticalOptions="Center" HorizontalOptions="End"/>
+                <!-- Picker pour les heures -->
+                <Picker Grid.Column="1"
+                        Title="Heures"
+                        ItemsSource="{Binding HoursOptions}"
+                        SelectedItem="{Binding SelectedHours}"
+                        WidthRequest="80"
+                        Style="{StaticResource DefaultPickerStyle}"
+                        IsEnabled="{Binding IsLimitless, Converter={StaticResource InverseBooleanConverter}}" />
 
-                <StackLayout>
-                    <Label Text="Images de la session"/>
-                    <CollectionView ItemsSource="{Binding SessionImages}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Image Source="{Binding FilePath}" HeightRequest="100" WidthRequest="100"/>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                <!-- Picker pour les minutes -->
+                <Picker Grid.Column="2"
+                        Title="Minutes"
+                        ItemsSource="{Binding MinutesOptions}"
+                        SelectedItem="{Binding SelectedMinutes}"
+                        WidthRequest="80"
+                        Style="{StaticResource DefaultPickerStyle}"
+                        IsEnabled="{Binding IsLimitless, Converter={StaticResource InverseBooleanConverter}}" />
 
-                    <Button Text="+" Command="{Binding AddImageCommand}"/>
-                </StackLayout>
-            </StackLayout>
-            <StackLayout Orientation="Horizontal" VerticalOptions="End" HorizontalOptions="CenterAndExpand" Spacing="20">
-                <Button Text="Annuler" Command="{Binding CancelCommand}" HorizontalOptions="Start"/>
-                <Button Text="Créer" Command="{Binding SaveSessionCommand}" HorizontalOptions="End"/>
-            </StackLayout>
+                <!-- Picker pour les secondes -->
+                <Picker Grid.Column="3"
+                        Title="Secondes"
+                        ItemsSource="{Binding SecondsOptions}"
+                        SelectedItem="{Binding SelectedSeconds}"
+                        WidthRequest="80"
+                        Style="{StaticResource DefaultPickerStyle}"
+                        IsEnabled="{Binding IsLimitless, Converter={StaticResource InverseBooleanConverter}}" />
+            </Grid>
 
+            <!-- Toggle pour la durée "Sans limite" -->
+            <HorizontalStackLayout Spacing="10">
+                <Label Text="Sans limite" FontAttributes="Bold" VerticalOptions="Center"/>
+                <Switch Style="{StaticResource DefaultToggleStyle}"  VerticalOptions="Center" IsToggled="{Binding IsLimitless}" HorizontalOptions="Start" />
+            </HorizontalStackLayout>
         </StackLayout>
-    </ScrollView>
+
+        <!-- Deuxième partie : FlexLayout des images (scrollable) -->
+        <ScrollView Grid.Row="1">
+            <!-- ScrollView autour du FlexLayout pour rendre les images scrollables -->
+            <StackLayout>
+                <Label Text="Images de la session" TextColor="{StaticResource Secondary}" FontAttributes="Bold" Margin="0,10"/>
+
+                <!-- FlexLayout pour gérer l'affichage des images -->
+                <FlexLayout Wrap="Wrap" Direction="Row" JustifyContent="Start" AlignItems="Center"
+                            BindableLayout.ItemsSource="{Binding SessionImages}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout Padding="5">
+                                <!-- Bouton "X" pour suppression, prend juste la place nécessaire -->
+                                <Button Text="X"
+                                        Command="{Binding BindingContext.RemoveImageCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                        CommandParameter="{Binding .}"
+                                        Style="{StaticResource OutlineButtonSecondaryStyle}"
+                                        HorizontalOptions="End" />
+
+                                <Image Source="{Binding FilePath}" HeightRequest="100" WidthRequest="100" />
+                            </StackLayout>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+
+            </StackLayout>
+        </ScrollView>
+        <!-- Bouton pour ajouter une image -->
+        <Button Grid.Row="2" Text="Ajouter une image"
+                        Command="{Binding AddImageCommand}"
+                        Style="{StaticResource OutlineButtonTertiaryStyle}"
+                        HorizontalOptions="Center" Margin="0,10"/>
+
+        <!-- Troisième partie : Boutons d'action (non-scrollable) -->
+        <Grid Style="{StaticResource CompactGridStyle}" Grid.Row="3" ColumnSpacing="20" HorizontalOptions="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Bouton Annuler -->
+            <Button Grid.Column="0" Text="Annuler"
+                    Command="{Binding CancelCommand}"
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    HorizontalOptions="Start"/>
+
+            <!-- Bouton Créer -->
+            <Button Grid.Column="1" Text="Valider"
+                    Command="{Binding SaveSessionCommand}"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    HorizontalOptions="End"/>
+        </Grid>
+
+    </Grid>
 
 </ContentPage>

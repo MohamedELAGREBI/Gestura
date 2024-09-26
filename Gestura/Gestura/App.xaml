@@ -8,6 +8,14 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/ComponentStyle/ButtonStyles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/ComponentStyle/EntryStyles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/ComponentStyle/GridStyles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/ComponentStyle/LabelStyles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/ComponentStyle/PageStyles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/ComponentStyle/PickerStyles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/ComponentStyle/SearchBarStyles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/ComponentStyle/SwitchStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

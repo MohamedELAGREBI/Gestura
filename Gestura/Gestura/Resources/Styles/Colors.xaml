@@ -6,40 +6,128 @@
 
     <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
 
-    <Color x:Key="Primary">#512BD4</Color>
-    <Color x:Key="PrimaryDark">#ac99ea</Color>
-    <Color x:Key="PrimaryDarkText">#242424</Color>
-    <Color x:Key="Secondary">#DFD8F7</Color>
-    <Color x:Key="SecondaryDarkText">#9880e5</Color>
-    <Color x:Key="Tertiary">#2B0B98</Color>
+    <!-- Couleurs de base avec déclinaisons -->
+
+    <!-- Primaire : Couleur bleu-vert -->
+    <!-- Usages : Boutons principaux, liens importants, éléments de navigation -->
+    <Color x:Key="PrimaryVeryLight">#EEFCFD</Color>
+    <!-- Hover léger sur boutons ou arrière-plan très doux -->
+    <Color x:Key="PrimaryLight">#66D9E4</Color>
+    <!-- Arrière-plan secondaire léger ou hover plus marqué -->
+    <Color x:Key="Primary">#1ECADA</Color>
+    <!-- Couleur primaire pour les boutons principaux, icônes -->
+    <Color x:Key="PrimaryDark">#0198A6</Color>
+    <!-- Boutons actifs ou survolés -->
+    <Color x:Key="PrimaryVeryDark">#004C53</Color>
+    <!-- Texte, bordures, éléments nécessitant du contraste -->
+
+    <!-- Secondaire : Couleur rose vif -->
+    <!-- Usages : Boutons d'action secondaires, alertes, notifications -->
+    <Color x:Key="SecondaryVeryLight">#FEEFF4</Color>
+    <!-- Hover léger sur boutons secondaires -->
+    <Color x:Key="SecondaryLight">#F76D99</Color>
+    <!-- Arrière-plan pour zones d'alerte douce -->
+    <Color x:Key="Secondary">#F41F63</Color>
+    <!-- Boutons secondaires ou actions importantes -->
+    <Color x:Key="SecondaryDark">#E6004A</Color>
+    <!-- Actions actives ou texte accentué -->
+    <Color x:Key="SecondaryVeryDark">#7A0027</Color>
+    <!-- Bordures ou accents sombres pour les notifications -->
+
+    <!-- Tertiaire : Couleur jaune vif -->
+    <!-- Usages : Indicateurs, badges d'information, messages d'avertissement -->
+    <Color x:Key="TertiaryVeryLight">#FFFCF0</Color>
+    <!-- Indicateurs doux ou zones d'information secondaire -->
+    <Color x:Key="TertiaryLight">#FFDE71</Color>
+    <!-- Badges ou icônes d'information -->
+    <Color x:Key="Tertiary">#FFCC20</Color>
+    <!-- Avertissements ou éléments clés à mettre en avant -->
+    <Color x:Key="TertiaryDark">#FFC500</Color>
+    <!-- Avertissements actifs ou badges d'information critique -->
+    <Color x:Key="TertiaryVeryDark">#896A00</Color>
+    <!-- Bordures, accents sombres pour éléments alertes -->
 
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>
-    <Color x:Key="Magenta">#D600AA</Color>
-    <Color x:Key="MidnightBlue">#190649</Color>
-    <Color x:Key="OffBlack">#1f1f1f</Color>
+    
+    <!-- Couleurs d'arrière-plan pour le thème clair -->
 
-    <Color x:Key="Gray100">#E1E1E1</Color>
-    <Color x:Key="Gray200">#C8C8C8</Color>
-    <Color x:Key="Gray300">#ACACAC</Color>
-    <Color x:Key="Gray400">#919191</Color>
-    <Color x:Key="Gray500">#6E6E6E</Color>
-    <Color x:Key="Gray600">#404040</Color>
-    <Color x:Key="Gray900">#212121</Color>
-    <Color x:Key="Gray950">#141414</Color>
+    <!-- Usages : Arrière-plan principal et secondaire, cartes, sections -->
+    <Color x:Key="LightBackgroundVeryLight1">#F5FDFD</Color>
+    <!-- Arrière-plan principal lumineux, neutre -->
+    <Color x:Key="LightBackgroundVeryLight2">#EAFBFB</Color>
+    <!-- Arrière-plan de cartes ou zones légèrement contrastées -->
+    <Color x:Key="LightBackgroundVeryLight3">#DFF9F9</Color>
+    <!-- Arrière-plan de sections légèrement mises en retrait -->
+    <Color x:Key="LightBackgroundVeryLight4">#D4F7F7</Color>
+    <!-- Arrière-plan pour des éléments très doux -->
+    <Color x:Key="LightBackgroundVeryLight5">#C9F5F5</Color>
+    <!-- Arrière-plan de widgets ou blocs légers -->
+    <Color x:Key="LightBackgroundLight1">#BFF3F3</Color>
+    <!-- Hover ou arrière-plan secondaire discret -->
+    <Color x:Key="LightBackgroundLight2">#B3F0F0</Color>
+    <!-- Cartes secondaires ou encarts -->
+    <Color x:Key="LightBackgroundLight3">#A7EDED</Color>
+    <!-- Séparateurs ou blocs secondaires plus prononcés -->
+    <Color x:Key="LightBackgroundLight4">#9CEBEA</Color>
+    <!-- Arrière-plan d'interactions passives -->
+    <Color x:Key="LightBackgroundLight5">#91E9E8</Color>
+    <!-- Arrière-plan de sections actives mais discrètes -->
 
+    <!-- Couleurs d'arrière-plan pour le thème sombre -->
+
+    <!-- Usages : Arrière-plan principal sombre, cartes sombres, zones contrastées -->
+    <Color x:Key="DarkBackgroundVeryDark1">#000506</Color>
+    <!-- Arrière-plan principal pour le thème sombre -->
+    <Color x:Key="DarkBackgroundVeryDark2">#000E0F</Color>
+    <!-- Sections principales sombres, texte lisible en blanc -->
+    <Color x:Key="DarkBackgroundVeryDark3">#001A1C</Color>
+    <!-- Cartes ou blocs sombres -->
+    <Color x:Key="DarkBackgroundVeryDark4">#00282C</Color>
+    <!-- Arrière-plan pour interactions passives -->
+    <Color x:Key="DarkBackgroundVeryDark5">#013A3F</Color>
+    <!-- Arrière-plan pour des widgets ou menus flottants -->
+    <Color x:Key="DarkBackgroundDark1">#305153</Color>
+    <!-- Hover sur éléments sombres -->
+    <Color x:Key="DarkBackgroundDark2">#35595B</Color>
+    <!-- Arrière-plan de widgets secondaires -->
+    <Color x:Key="DarkBackgroundDark3">#3A6164</Color>
+    <!-- Cartes sombres ou arrière-plan d'éléments passifs -->
+    <Color x:Key="DarkBackgroundDark4">#3F696C</Color>
+    <!-- Arrière-plan de blocs ou éléments décoratifs -->
+    <Color x:Key="DarkBackgroundDark5">#456F74</Color>
+    <!-- Arrière-plan des actions interactives secondaires -->
+
+    <!-- Exemples de SolidColorBrushes pour faciliter l'utilisation des couleurs -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
+    <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLight}"/>
+    <SolidColorBrush x:Key="PrimaryVeryLightBrush" Color="{StaticResource PrimaryVeryLight}"/>
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDark}"/>
+    <SolidColorBrush x:Key="PrimaryVeryDarkBrush" Color="{StaticResource PrimaryVeryDark}"/>
+
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
+    <SolidColorBrush x:Key="SecondaryLightBrush" Color="{StaticResource SecondaryLight}"/>
+    <SolidColorBrush x:Key="SecondaryVeryLightBrush" Color="{StaticResource SecondaryVeryLight}"/>
+    <SolidColorBrush x:Key="SecondaryDarkBrush" Color="{StaticResource SecondaryDark}"/>
+    <SolidColorBrush x:Key="SecondaryVeryDarkBrush" Color="{StaticResource SecondaryVeryDark}"/>
+
     <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
+    <SolidColorBrush x:Key="TertiaryLightBrush" Color="{StaticResource TertiaryLight}"/>
+    <SolidColorBrush x:Key="TertiaryVeryLightBrush" Color="{StaticResource TertiaryVeryLight}"/>
+    <SolidColorBrush x:Key="TertiaryDarkBrush" Color="{StaticResource TertiaryDark}"/>
+    <SolidColorBrush x:Key="TertiaryVeryDarkBrush" Color="{StaticResource TertiaryVeryDark}"/>
+
     <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
     <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
+    
+    <!-- Brushes pour arrière-plans thème clair -->
+    <SolidColorBrush x:Key="LightPrimaryBackgroundBrush" Color="{StaticResource LightBackgroundVeryLight1}"/>
+    <SolidColorBrush x:Key="LightSecondaryBackgroundBrush" Color="{StaticResource LightBackgroundLight2}"/>
+    <SolidColorBrush x:Key="LightTertiaryBackgroundBrush" Color="{StaticResource LightBackgroundLight5}"/>
 
-    <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
-    <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>
-    <SolidColorBrush x:Key="Gray300Brush" Color="{StaticResource Gray300}"/>
-    <SolidColorBrush x:Key="Gray400Brush" Color="{StaticResource Gray400}"/>
-    <SolidColorBrush x:Key="Gray500Brush" Color="{StaticResource Gray500}"/>
-    <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
-    <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
-    <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
+    <!-- Brushes pour arrière-plans thème sombre -->
+    <SolidColorBrush x:Key="DarkPrimaryBackgroundBrush" Color="{StaticResource DarkBackgroundVeryDark1}"/>
+    <SolidColorBrush x:Key="DarkSecondaryBackgroundBrush" Color="{StaticResource DarkBackgroundDark2}"/>
+    <SolidColorBrush x:Key="DarkTertiaryBackgroundBrush" Color="{StaticResource DarkBackgroundDark5}"/>
+    
 </ResourceDictionary>

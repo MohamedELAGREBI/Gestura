@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Gestura.Resources.Styles.ComponentStyle.PickerStyles">
+    <!-- Style par défaut pour le Picker -->
+    <Style TargetType="Picker" x:Key="DefaultPickerStyle">
+        <!-- Couleur d'arrière-plan pour un Picker neutre et contrastant -->
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightBackgroundLight1}, Dark={StaticResource DarkBackgroundDark1}}" />
+
+        <!-- Couleur de texte pour garantir un contraste lisible -->
+        <Setter Property="TextColor" Value="{StaticResource PrimaryVeryLight}" />
+
+        <!-- Font Size et Attributs pour garantir une lisibilité optimale -->
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontAttributes" Value="None" />
+
+        <!-- Gestion des états visuels comme le focus ou l'interaction -->
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <Setter.Value>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <!-- État normal (sans focus) -->
+                        <VisualState x:Name="Normal" />
+
+                        <!-- État Disabled (désactivé) -->
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <!-- Afficher une opacité plus faible et désactiver les interactions -->
+                                <Setter Property="Opacity" Value="0.6" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Picker" x:Key="SecondaryPickerStyle" BasedOn="{StaticResource DefaultPickerStyle}">
+        <!-- Arrière-plan plus léger pour un picker secondaire -->
+        <Setter Property="BackgroundColor" Value="{StaticResource SecondaryLight}" />
+        <Setter Property="TextColor" Value="{StaticResource SecondaryVeryDark}" />
+    </Style>
+
+</ResourceDictionary>

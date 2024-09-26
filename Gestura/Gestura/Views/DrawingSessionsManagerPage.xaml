@@ -15,59 +15,87 @@
     </ContentPage.Resources>
 
     <ScrollView Padding="10">
-        <StackLayout>
-            <Button Text="+" Command="{Binding AddNewSessionCommand}" HorizontalOptions="End"/>
+        <Grid Style="{StaticResource ElevatedGridStyle}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
             <SearchBar Placeholder="Rechercher une session ..."
-                   Text="{Binding SearchQuery}"
-                   SearchCommand="{Binding SearchCommand}"/>
+                       Text="{Binding SearchQuery}"
+                       SearchCommand="{Binding SearchCommand}"
+                       Grid.Row="0"
+                       Grid.Column="0"
+                       HorizontalOptions="FillAndExpand"
+                       Style="{StaticResource DefaultSearchBarStyle}"/>
+
+            <Button Text="+" 
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    Command="{Binding AddNewSessionCommand}" 
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    HorizontalOptions="End"/>
 
             <CollectionView ItemsSource="{Binding FilteredDrawingSessions}"
-                        SelectionMode="None">
+                            SelectionMode="None"
+                            Grid.Row="2">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Padding="10" Margin="5">
-                            <StackLayout>
+                        <Border StrokeThickness="1"
+                                Stroke="{StaticResource PrimaryDarkBrush}"
+                                BackgroundColor="{StaticResource DarkBackgroundVeryDark3}" 
+                                Padding="10" 
+                                Margin="5">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+
+                            <Grid Style="{StaticResource CompactGridStyle}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!--Titre-->
                                 <Label Text="{Binding Title}"
-                                   FontAttributes="{Binding IsCompleted, Converter={StaticResource CompletedToItalicConverter}}"
-                                   Opacity="{Binding IsCompleted, Converter={StaticResource CompletedToOpacityConverter}}"
-                                   FontSize="Large"/>
+                                       Style="{StaticResource TitleLabelStyle}"
+                                       Grid.Row="0"/>
 
-                                <StackLayout Orientation="Horizontal" Spacing="5">
-                                    <Label Text="Durée " FontAttributes="Bold"/>
+                                <!--Details-->
+                                <StackLayout Grid.Row="1" Orientation="Horizontal" Spacing="10">
+                                    <Label Text="Durée : " FontAttributes="Bold"/>
                                     <Label Text="{Binding PoseDuration}"/>
-                                </StackLayout>
-
-                                <StackLayout Orientation="Horizontal" Spacing="5">
                                     <Label Text="Dernière mise à jour : " FontAttributes="Bold"/>
                                     <Label Text="{Binding LastUpdateAt, StringFormat='{0:dd/MM/yyyy}'}"/>
                                 </StackLayout>
 
-                                <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                                <StackLayout Grid.Row="2" Orientation="Horizontal" HorizontalOptions="End" Spacing="5">
                                     <Button Text="Modifier"
                                         Command="{Binding Source={x:Reference DrawingSessionManagerPage}, Path=BindingContext.EditSessionCommand}"
                                         CommandParameter="{Binding .}"
-                                        TextColor="White"
-                                        Margin="5"/>
+                                        Style="{StaticResource OutlineButtonPrimaryStyle}"/>
 
                                     <Button Text="Supprimer"
                                         Command="{Binding Source={x:Reference DrawingSessionManagerPage}, Path=BindingContext.DeleteSessionCommand}"
                                         CommandParameter="{Binding .}"
-                                        TextColor="White"
-                                        Margin="5"/>
+                                        Style="{StaticResource OutlineButtonSecondaryStyle}"/>
 
                                     <Button Text="{Binding IsCompleted, Converter={StaticResource CompletedToReplayTextConverter}}"
                                         Command="{Binding Source={x:Reference DrawingSessionManagerPage}, Path=BindingContext.StartOrReplaySessionCommand}"
                                         CommandParameter="{Binding .}"
-                                        TextColor="White"
-                                        Margin="5"/>
+                                        Style="{StaticResource TertiaryButtonStyle}"/>
                                 </StackLayout>
-                            </StackLayout>
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-        </StackLayout>
+        </Grid>
     </ScrollView>
 
 </ContentPage>

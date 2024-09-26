@@ -52,6 +52,7 @@ namespace Gestura.ViewModels
         }
 
         public ICommand AddImageCommand { get; }
+        public ICommand RemoveImageCommand { get; }
         public ICommand SaveSessionCommand { get; }
         public ICommand CancelCommand { get; }
 
@@ -90,6 +91,7 @@ namespace Gestura.ViewModels
             AddImageCommand = new Command(async () => await OnAddImagesAsync());
             SaveSessionCommand = new Command(async () => await OnSaveSessionAsync());
             CancelCommand = new Command(async () => await OnCancelAsync());
+            RemoveImageCommand = new Command<ImageReference>(OnRemoveImage);
         }
 
         private async Task OnAddImagesAsync()
@@ -150,5 +152,14 @@ namespace Gestura.ViewModels
         {
             await Shell.Current.GoToAsync("..");
         }
+
+        private void OnRemoveImage(ImageReference image)
+        {
+            if (SessionImages.Contains(image))
+            {
+                SessionImages.Remove(image);
+            }
+        }
+
     }
 }

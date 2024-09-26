@@ -77,7 +77,7 @@ namespace Gestura.ViewModels
             Images = new ObservableCollection<ImageReference>(session.SelectedImages);
 
             PreviousPoseCommand = new Command(OnPreviousPose, () => !IsFirstImage);
-            NextPoseCommand = new Command(OnNextPose, () => !IsLastImage);
+            NextPoseCommand = new Command(async () => await OnNextPoseAsync(), () => !IsLastImage);
             PlayPauseCommand = new Command(OnPlayPause, () => !_currentSession.IsLimitless);
             QuitCommand = new Command(async () => await OnQuitAsync());
             EndSessionCommand = new Command(async () => await EndSessionAsync());
@@ -121,7 +121,7 @@ namespace Gestura.ViewModels
             if (RemainingTime.TotalSeconds <= 0)
             {
                 _timer.Stop();
-                OnNextPose();
+                OnNextPoseAsync().Wait();
             }
         }
 
@@ -138,7 +138,7 @@ namespace Gestura.ViewModels
             OnPropertyChanged(nameof(PlayPauseButtonText));
         }
 
-        private void OnNextPose()
+        private async Task OnNextPoseAsync()
         {
             if (CurrentImageIndex < Images.Count - 1)
             {
@@ -152,7 +152,7 @@ namespace Gestura.ViewModels
             }
             else
             {
-                EndSessionAsync();
+                await EndSessionAsync();
             }
         }
 

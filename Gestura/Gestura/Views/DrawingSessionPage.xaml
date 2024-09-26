@@ -36,7 +36,8 @@
                     Command="{Binding PreviousPoseCommand}"
                     Clicked="OnPreviousImage"
                     HorizontalOptions="Start"
-                    IsVisible="{Binding AreControlsVisible}"/>
+                    IsVisible="{Binding AreControlsVisible}"
+                    Style="{StaticResource PrimaryButtonStyle}"/>
 
             <Label Text="{Binding RemainingTime, Converter={StaticResource TimeSpanToStringConverter}}"
                    TextColor="White"
@@ -44,13 +45,15 @@
                    VerticalOptions="CenterAndExpand"
                    HorizontalOptions="CenterAndExpand"
                    x:Name="TimerLabel"
-                   Margin="100,0,100,0"/>
+                   Margin="100,0,100,0"
+                   BackgroundColor="{StaticResource DarkBackgroundVeryDark1}"/>
 
             <Button Text="Suivant"
                     Command="{Binding NextPoseCommand}"
                     Clicked="OnNextImage"
                     HorizontalOptions="End"
-                    IsVisible="{Binding AreControlsVisible}"/>
+                    IsVisible="{Binding AreControlsVisible}"
+                    Style="{StaticResource PrimaryButtonStyle}"/>
 
         </StackLayout>
 
@@ -60,15 +63,18 @@
                      VerticalOptions="End"
                      Grid.Row="2" Grid.Column="1"
                      Margin="0, 0, 0, 20"
+                     Spacing="50"
                     IsVisible="{Binding AreControlsVisible}">
 
             <Button Text="{Binding PlayPauseButtonText}"
                     Command="{Binding PlayPauseCommand}"
-                    HorizontalOptions="StartAndExpand"/>
+                    HorizontalOptions="StartAndExpand"
+                    Style="{StaticResource OutlineButtonPrimaryStyle}"/>
 
             <Button Text="Quitter"
                     Command="{Binding QuitCommand}"
-                    HorizontalOptions="EndAndExpand"/>
+                    HorizontalOptions="EndAndExpand"
+                    Style="{StaticResource OutlineButtonSecondaryStyle}"/>
 
         </StackLayout>
 
