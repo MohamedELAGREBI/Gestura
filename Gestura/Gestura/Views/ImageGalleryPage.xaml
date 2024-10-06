@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Gestura.Converters"
+             xmlns:components="clr-namespace:Gestura.Components"
              x:Class="Gestura.Views.ImageGalleryPage"
              Title="Image Gallery">
 
@@ -15,7 +16,9 @@
         <!-- Première ligne : fixe (Picker + bouton) -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <!-- Hauteur automatique pour le Picker et le bouton -->
+            <!-- Hauteur automatique pour le Picker pour la méthode d'import -->
+            <RowDefinition Height="Auto"/>
+            <!--Hauteur automatique pour le Picker pour le choix du répertoire-->
             <RowDefinition Height="*" />
             <!-- Le contenu défilable prendra tout l'espace restant -->
         </Grid.RowDefinitions>
@@ -40,35 +43,36 @@
                     HorizontalOptions="End"/>
         </Grid>
 
-        <ScrollView Grid.Row="1" Padding="10">
+        <Grid Grid.Row="1" Padding="10" Style="{StaticResource DefaultGridStyle}" BackgroundColor="{StaticResource PrimaryDark}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-            <!-- FlexLayout pour afficher les images -->
-            <FlexLayout Direction="Row"
-                    Wrap="Wrap"
-                    JustifyContent="Start"
-                    AlignItems="Start"
-                    BindableLayout.ItemsSource="{Binding ImageReferences}">
+            <Picker Title="Répertoire d'importation"
+                    ItemsSource="{Binding DirectoryNames}"
+                    SelectedItem="{Binding SelectedDirectory, Mode=TwoWay}"
+                    HorizontalOptions="FillAndExpand"
+                    Style="{StaticResource DefaultPickerStyle}"/>
 
-                <!-- Modèle d'élément dans le FlexLayout -->
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate>
-                        <StackLayout Padding="10">
-                            <Image Source="{Binding FilePath}"
-                               Aspect="AspectFill"
-                               HeightRequest="150"
-                               WidthRequest="150" />
+            <Button Text="+"
+                    Command="{Binding CreateDirectoryCommand}"
+                    Grid.Column="1"
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    HorizontalOptions="End"/>
+        </Grid>
 
-                            <!-- Bouton "X" pour suppression, prend juste la place nécessaire -->
-                            <Button Text="X"
-                                Command="{Binding BindingContext.DeleteImageCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                CommandParameter="{Binding .}"
-                                Style="{StaticResource OutlineButtonSecondaryStyle}"
-                                HorizontalOptions="End" />
-                        </StackLayout>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </FlexLayout>
-
+        <ScrollView Grid.Row="2" Padding="10">
+            <StackLayout>
+                <!-- Collection des répertoires -->
+                <CollectionView x:Name="DirectoryCollectionView" ItemsSource="{Binding Directories}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <components:DirectoryComponent/>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
         </ScrollView>
     </Grid>
 </ContentPage>

@@ -104,7 +104,10 @@ namespace Gestura.ViewModels
             var viewModel = imageSelectionPage.BindingContext as ImageSelectionViewModel;
             viewModel.ImagesSelected += (sender, selectedImages) =>
             {
-                tcs.SetResult(selectedImages);
+                if (!tcs.Task.IsCompleted)
+                {
+                    tcs.SetResult(selectedImages);
+                }
             };
 
             await Shell.Current.Navigation.PushModalAsync(imageSelectionPage);

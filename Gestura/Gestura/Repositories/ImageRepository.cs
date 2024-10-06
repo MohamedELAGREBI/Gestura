@@ -8,15 +8,22 @@ namespace Gestura.Repositories
     public class ImageRepository : IImageRepository
     {
         private readonly SQLiteAsyncConnection _database;
+        private readonly IDrawingSessionImageReferenceRepository _relationRepository;
 
         public ImageRepository()
         {
             _database = MauiProgram.Services.GetService<DatabaseService>().GetConnection();
+            _relationRepository = MauiProgram.Services.GetService<IDrawingSessionImageReferenceRepository>();
         }
 
-        public Task<int> DeleteImageAsync(ImageReference image)
+        public async Task<int> DeleteImageAsync(ImageReference image)
         {
-            return _database.DeleteAsync(image);
+            var sessionsWithThisImage = await _relationRepository.GetSessionsForImageAsync(image.Id);
+            foreach (var session in sessionsWithThisImage)
+            {
+                await _relationRepository.DeleteRelationAsync(session.Id, image.Id);
+            }
+            return await _database.DeleteAsync(image);
         }
 
         public Task<List<ImageReference>> GetAllImagesAsync()
@@ -27,6 +34,11 @@ namespace Gestura.Repositories
         public Task<ImageReference> GetImagesAsync(int id)
         {
             return _database.Table<ImageReference>().Where(i => i.Id == id).FirstOrDefaultAsync();
+        }
+
+        public Task<List<ImageReference>> GetImagesByDirectoryIdAsync(int directoryId)
+        {
+            return _database.Table<ImageReference>().Where(i => i.DirectoryId == directoryId).ToListAsync();
         }
 
         public Task<int> SaveImageAsync(ImageReference image)

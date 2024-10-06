@@ -9,13 +9,14 @@ namespace Gestura.ViewModels
     public class ImageGalleryViewModel : BaseViewModel, IImageGalleryViewModel
     {
         private readonly IImageService _imageService;
+        private readonly IDirectoryService _directoryService;
         private readonly INotificationService _notificationService;
 
-        private ObservableCollection<ImageReference> _imageReferences;
-        public ObservableCollection<ImageReference> ImageReferences
+        private ObservableCollection<DirectoryComponentViewModel> _directories;
+        public ObservableCollection<DirectoryComponentViewModel> Directories
         {
-            get => _imageReferences;
-            set => SetProperty(ref _imageReferences, value);
+            get => _directories;
+            set => SetProperty(ref _directories, value);
         }
 
         private string _selectedImportMethod;
@@ -28,6 +29,13 @@ namespace Gestura.ViewModels
             }
         }
 
+        private string _selectedDirectory;
+        public string SelectedDirectory
+        {
+            get => _selectedDirectory;
+            set => SetProperty(ref _selectedDirectory, value);
+        }
+
         private ObservableCollection<string> _importMethods;
         public ObservableCollection<string> ImportMethods
         {
@@ -35,23 +43,26 @@ namespace Gestura.ViewModels
             set => SetProperty(ref _importMethods, value);
         }
 
-        private int _columnCount;
-        public int ColumnCount
+        private ObservableCollection<string> _directoryNames;
+        public ObservableCollection<string> DirectoryNames
         {
-            get => _columnCount;
-            set => SetProperty(ref _columnCount, value);
+            get => _directoryNames;
+            set => SetProperty(ref _directoryNames, value);
         }
 
         public ICommand ImportCommand { get; }
         public ICommand ImportImageFromLocalCommand { get; }
         public ICommand ImportImageFromUrlCommand { get; }
-        public ICommand DeleteImageCommand { get; }
+        public ICommand CreateDirectoryCommand { get; }
 
-        public ImageGalleryViewModel(IImageService imageService, INotificationService notificationService)
+        public ImageGalleryViewModel(IImageService imageService, IDirectoryService directoryService, INotificationService notificationService)
         {
             _notificationService = notificationService;
             _imageService = imageService;
-            ImageReferences = new ObservableCollection<ImageReference>();
+            _directoryService = directoryService;
+
+            Directories = new ObservableCollection<DirectoryComponentViewModel>();
+            DirectoryNames = new ObservableCollection<string>();
 
             ImportMethods = new ObservableCollection<string>
             {
@@ -64,12 +75,46 @@ namespace Gestura.ViewModels
             ImportCommand = new Command(async () => await OnImportMethodChangedAsync());
             ImportImageFromLocalCommand = new Command(async () => await OnImportImageFromLocalAsync());
             ImportImageFromUrlCommand = new Command<string>(async (url) => await OnImportImageFromUrlAsync(url));
-            DeleteImageCommand = new Command<ImageReference>(async (image) => await OnDeleteImageAsync(image));
+            CreateDirectoryCommand = new Command(async () => await OnCreateDirectoryAsync());
 
-            LoadImages();
+            LoadDirectories();
+        }
 
-            UpdateColumnCount();
-            DeviceDisplay.MainDisplayInfoChanged += (s, e) => UpdateColumnCount();
+        private async void LoadDirectories()
+        {
+            Directories.Clear();
+
+            var directories = await _directoryService.GetAllDirectoriesAsync();
+            if (directories == null || directories.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var directory in directories)
+            {
+                var directoryViewModel = new DirectoryComponentViewModel(directory, _imageService, _notificationService);
+                Directories.Add(directoryViewModel);
+            }
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                DirectoryNames.Clear();
+                foreach (var directory in directories)
+                {
+                    if (!DirectoryNames.Any())
+                    {
+                        DirectoryNames.Add(" ");
+                    }
+                    else
+                    {
+                        if (!string.Equals(directory.Name, Constantes.DEFAULT_FROM_LOCALSTORAGE_DIRECTORY, StringComparison.OrdinalIgnoreCase)
+                            && !string.Equals(directory.Name, Constantes.DEFAULT_FROM_WEBURL_DIRECTORY, StringComparison.OrdinalIgnoreCase))
+                        {
+                            DirectoryNames.Add(directory.Name);
+                        }
+                    }
+                }
+            });
         }
 
         private async Task OnImportMethodChangedAsync()
@@ -103,11 +148,9 @@ namespace Gestura.ViewModels
 
         private async Task OnImportImageFromLocalAsync()
         {
-            var image = await _imageService.ImportImageFromLocalAsync();
-            if (image != null)
-            {
-                ImageReferences.Add(image);
-            }
+            var image = await _imageService.ImportImageFromLocalAsync(SelectedDirectory);
+
+            LoadDirectories();
         }
 
         private async Task OnImportImageFromUrlAsync(string url)
@@ -117,68 +160,28 @@ namespace Gestura.ViewModels
                 return;
             }
 
-            var image = await _imageService.ImportImageFromUrlAsync(url);
-            if (image != null)
-            {
-                ImageReferences.Add(image);
-            }
+            var image = await _imageService.ImportImageFromUrlAsync(url, SelectedDirectory);
+
+            LoadDirectories();
         }
 
-        private async Task OnDeleteImageAsync(ImageReference imageReference)
+        private async Task OnCreateDirectoryAsync()
         {
-            try
+            var newDirectoryName = await Shell.Current.DisplayPromptAsync("Créez un répertoire", "Nom : ", "OK", "Annuler");
+            if (!string.IsNullOrWhiteSpace(newDirectoryName))
             {
-                var result = await _imageService.DeleteImageAsync(imageReference);
-                if (result)
+                try
                 {
-                    var image = ImageReferences.FirstOrDefault(i => i == imageReference);
-                    if (image != null)
-                    {
-                        ImageReferences.Remove(image);
-                        await _notificationService.ShowSuccessAsync("Image supprimée avec succès.");
-                    }
+                    await _directoryService.CreateDirectoryAsync(new Models.Directory { Name = newDirectoryName });
+                    await _notificationService.ShowSuccessAsync($"Le répertoire \"{newDirectoryName}\" a été créé avec succès.");
+                    LoadDirectories();
+                }
+                catch (Exception ex)
+                {
+                    await _notificationService.ShowErrorAsync($"Erreur lors de la création du répertoire \"{newDirectoryName}\" : " + ex.Message);
                 }
             }
-            catch (Exception ex)
-            {
-                await _notificationService.ShowErrorAsync("Erreur lors de la suppression de l'image : " + ex.Message);
-            }
         }
 
-        private void UpdateColumnCount()
-        {
-            // Obtenir la largeur de l'écran
-            var screenWidth = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density;
-
-            // Definir le nombre de colonnes basé sur la largeur de l'écran
-            if (screenWidth > 1000)
-            {
-                ColumnCount = 4;
-            }
-            else if (screenWidth > 600)
-            {
-                ColumnCount = 3;
-            }
-            else
-            {
-                ColumnCount = 2;
-            }
-        }
-
-        private async void LoadImages()
-        {
-            try
-            {
-                var existingImages = await _imageService.GetAllImagesAsync();
-                foreach (var image in existingImages)
-                {
-                    ImageReferences.Add(image);
-                }
-            }
-            catch (Exception ex)
-            {
-                await _notificationService.ShowErrorAsync("Erreur lors de la récupération des images de référence : " + ex.Message);
-            }
-        }
     }
 }

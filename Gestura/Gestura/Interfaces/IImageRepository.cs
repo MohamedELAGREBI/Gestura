@@ -11,5 +11,7 @@ namespace Gestura.Interfaces
         Task<int> SaveImageAsync(ImageReference image);
 
         Task<int> DeleteImageAsync(ImageReference image);
+
+        Task<List<ImageReference>> GetImagesByDirectoryIdAsync(int directoryId);
     }
 }

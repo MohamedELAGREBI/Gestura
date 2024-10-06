@@ -1,9 +1,10 @@
 ﻿using SQLite;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 
 namespace Gestura.Models
 {
-    [Table("IMAGE_REFERENCES")]
+    [SQLite.Table("IMAGE_REFERENCES")]
     public class ImageReference
     {
         [PrimaryKey, AutoIncrement]
@@ -28,6 +29,24 @@ namespace Gestura.Models
                 _filePath = value;
             }
         }
+
+        private string _directoryPath;
+        public virtual string DirectoryPath
+        {
+            get => _directoryPath;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentNullException("Le chemin du répertoire est invalide : " + value);
+                }
+
+                _directoryPath = value;
+            }
+        }
+
+        [ForeignKey(nameof(Directory))]
+        public virtual int DirectoryId { get; set; }
 
         [Ignore]
         public List<string> Tags { get; set; } = new List<string>();

@@ -16,6 +16,7 @@ namespace Gestura.Services
         {
             try
             {
+                await _database.CreateTableAsync<Models.Directory>();
                 await _database.CreateTableAsync<DrawingSession>();
                 await _database.CreateTableAsync<ImageReference>();
                 await _database.CreateTableAsync<DrawingSessionImageReference>();

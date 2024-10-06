@@ -57,6 +57,7 @@ namespace Gestura.ViewModels
         public void OnConfirmSelection()
         {
             ImagesSelected?.Invoke(this, SelectedSessionImages);
+            Shell.Current.Navigation.PopModalAsync();
         }
 
         private async Task OnCancelAsync()

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:components="clr-namespace:Gestura.Components"
+             x:Class="Gestura.Components.DirectoryComponent">
+    <StackLayout>
+        <Button Text="{Binding DirectoryName}" Command="{Binding ToggleVisibilityCommand}"/>
+
+        <!--FlexLayout pour afficher les images-->
+        <FlexLayout Direction="Row"
+                    Wrap="Wrap"
+                    JustifyContent="Start"
+                    AlignItems="Start"
+                    BindableLayout.ItemsSource="{Binding Images}"
+                    IsVisible="{Binding IsExpanded}">
+
+            <!--Modèle d'élément dans le FlexLayout-->
+            <BindableLayout.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout Padding="10">
+                        <Image Source="{Binding FilePath}"
+                   Aspect="AspectFill"
+                   HeightRequest="150"
+                   WidthRequest="150" />
+
+                        <!--Bouton "X" pour suppression, prend juste la place nécessaire-->
+                        <Button Text="X"
+                                Command="{Binding BindingContext.DeleteImageCommand, Source={RelativeSource AncestorType={x:Type components:DirectoryComponent}}}"
+                                CommandParameter="{Binding .}"
+                                Style="{StaticResource OutlineButtonSecondaryStyle}"
+                                HorizontalOptions="End" />
+                    </StackLayout>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </FlexLayout>
+
+    </StackLayout>
+</ContentView>

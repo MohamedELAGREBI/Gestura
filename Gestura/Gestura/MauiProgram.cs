@@ -29,10 +29,12 @@ namespace Gestura
             databaseService.InitializeAsync().ConfigureAwait(false);
             builder.Services.AddSingleton(databaseService);
 
+            builder.Services.AddSingleton<IDirectoryRepository, DirectoryRepository>();
             builder.Services.AddSingleton<IImageRepository, ImageRepository>();
             builder.Services.AddSingleton<IDrawingSessionRepository, DrawingSessionRepository>();
             builder.Services.AddSingleton<IDrawingSessionImageReferenceRepository, DrawingSessionImageReferenceRepository>();
 
+            builder.Services.AddSingleton<IDirectoryService, DirectoryService>();
             builder.Services.AddSingleton<IImageService, ImageService>();
             builder.Services.AddSingleton<IDrawingSessionService, DrawingSessionService>();
             builder.Services.AddSingleton<INotificationService, NotificationService>();

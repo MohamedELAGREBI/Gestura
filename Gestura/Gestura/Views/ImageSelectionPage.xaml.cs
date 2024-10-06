@@ -12,13 +12,6 @@ public partial class ImageSelectionPage : ContentPage
         BindingContext = new ImageSelectionViewModel(imageService, sessionImages);
     }
 
-    private void OnConfirmSelectionClicked(object sender, EventArgs e)
-    {
-        var viewModel = BindingContext as ImageSelectionViewModel;
-        viewModel.OnConfirmSelection();
-        Shell.Current.Navigation.PopModalAsync();
-    }
-
     private void OnImageSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var viewModel = BindingContext as ImageSelectionViewModel;

@@ -1,25 +1,26 @@
-﻿using Gestura.Interfaces;
+﻿using Gestura.Commons;
+using Gestura.Interfaces;
 using Gestura.Models;
 
 namespace Gestura.Services
 {
     public class ImageService : IImageService
     {
-        private readonly string _imageFolderPath;
+        private readonly IDirectoryService _directoryService;
         private readonly IImageRepository _imageRepository;
 
         public ImageService(IImageRepository imageRepository)
         {
+            _directoryService = MauiProgram.Services.GetService<IDirectoryService>();
             _imageRepository = imageRepository ?? throw new ArgumentNullException(nameof(imageRepository));
-            _imageFolderPath = Path.Combine(FileSystem.AppDataDirectory, "Images");
 
-            if (!Directory.Exists(_imageFolderPath))
+            if (!System.IO.Directory.Exists(Constantes.ImageFolderPath))
             {
-                Directory.CreateDirectory(_imageFolderPath);
+                System.IO.Directory.CreateDirectory(Constantes.ImageFolderPath);
             }
         }
 
-        public async Task<ImageReference> ImportImageFromLocalAsync()
+        public async Task<ImageReference> ImportImageFromLocalAsync(string directoryName = null)
         {
             var result = await FilePicker.PickAsync(new PickOptions
             {
@@ -32,9 +33,36 @@ namespace Gestura.Services
                 throw new InvalidDataException("Erreur lors de la récupération du fichier dans le stockage local.");
             }
 
+            if (string.IsNullOrWhiteSpace(directoryName))
+            {
+                directoryName = Constantes.DEFAULT_FROM_LOCALSTORAGE_DIRECTORY;
+            }
+
+            var directory = await _directoryService.GetDirectoryByNameAsync(directoryName);
+            if (directory == null)
+            {
+                var newDirectory = new Models.Directory { Name = directoryName };
+                var success = await _directoryService.CreateDirectoryAsync(newDirectory);
+                if (!success)
+                {
+                    throw new InvalidDataException($"Erreur lors de la création du répertoire {directoryName}.");
+                }
+                else
+                {
+                    directory = newDirectory;
+                }
+            }
+
+            var directoryPath = Path.Combine(Constantes.ImageFolderPath, directory.Name);
+
+            if (!System.IO.Directory.Exists(directoryPath))
+            {
+                System.IO.Directory.CreateDirectory(directoryPath);
+            }
+
             using (var stream = await result.OpenReadAsync())
             {
-                var filePath = Path.Combine(_imageFolderPath, result.FileName);
+                var filePath = Path.Combine(directoryPath, result.FileName);
 
                 if (File.Exists(filePath))
                 {
@@ -48,6 +76,8 @@ namespace Gestura.Services
                     FileName = result.FileName,
                     FilePath = filePath,
                     CreatedAt = DateTime.Now,
+                    DirectoryPath = directoryPath,
+                    DirectoryId = directory.Id,
                 };
 
                 var saveResult = await _imageRepository.SaveImageAsync(imageReference);
@@ -63,11 +93,38 @@ namespace Gestura.Services
             }
         }
 
-        public async Task<ImageReference> ImportImageFromUrlAsync(string imageUrl)
+        public async Task<ImageReference> ImportImageFromUrlAsync(string imageUrl, string directoryName = null)
         {
             if (string.IsNullOrWhiteSpace(imageUrl))
             {
                 throw new ArgumentNullException(nameof(imageUrl));
+            }
+
+            if (string.IsNullOrWhiteSpace(directoryName))
+            {
+                directoryName = Constantes.DEFAULT_FROM_WEBURL_DIRECTORY;
+            }
+
+            var directory = await _directoryService.GetDirectoryByNameAsync(directoryName);
+            if (directory == null)
+            {
+                var newDirectory = new Models.Directory { Name = directoryName };
+                var success = await _directoryService.CreateDirectoryAsync(newDirectory);
+                if (!success)
+                {
+                    throw new InvalidDataException($"Erreur lors de la création du répertoire {directoryName}.");
+                }
+                else
+                {
+                    directory = newDirectory;
+                }
+            }
+
+            var directoryPath = Path.Combine(Constantes.ImageFolderPath, directory.Name);
+
+            if (!System.IO.Directory.Exists(directoryPath))
+            {
+                System.IO.Directory.CreateDirectory(directoryPath);
             }
 
             using (var client = new HttpClient())
@@ -85,7 +142,7 @@ namespace Gestura.Services
                     {
                         fileName = Guid.NewGuid().ToString().ToUpperInvariant() + ".jpg";
                     }
-                    var filePath = Path.Combine(_imageFolderPath, fileName);
+                    var filePath = Path.Combine(Constantes.ImageFolderPath, fileName);
 
                     if (File.Exists(filePath))
                     {
@@ -99,6 +156,8 @@ namespace Gestura.Services
                         FileName = fileName,
                         FilePath = filePath,
                         CreatedAt = DateTime.Now,
+                        DirectoryPath = directoryPath,
+                        DirectoryId = directory.Id
                     };
 
                     var saveResult = await _imageRepository.SaveImageAsync(imageReference);
@@ -126,6 +185,11 @@ namespace Gestura.Services
         public async Task<List<ImageReference>> GetAllImagesAsync()
         {
             return await _imageRepository.GetAllImagesAsync();
+        }
+
+        public async Task<List<ImageReference>> GetImagesByDirectoryIdAsync(int directoryId)
+        {
+            return await _imageRepository.GetImagesByDirectoryIdAsync(directoryId);
         }
 
         public async Task<bool> DeleteImageAsync(ImageReference image)
