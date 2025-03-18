@@ -39,8 +39,8 @@
 
 ## Usage
 1. **Import images**:
-  - **From your device**: Browse your folders to add your favorite pictures.
-  - **From a URL**: Simply copy the link of the image and paste it into Gestura.
+    - **From your device**: Browse your folders to add your favorite pictures.
+    - **From a URL**: Simply copy the link of the image and paste it into Gestura.
 2. **Create a session**: Give it a name and set the interval duration between each pose.
 3. **Start the session**: The slideshow begins! The app will display each image according to your chosen interval.
 4. **Interaction**: Pause if you need more time, or skip an image if you’re eager to see the next one.
