@@ -25,8 +25,8 @@
    git clone https://github.com/your-username/Gestura.git
    cd Gestura
 3. **Restore NuGet packages**:
-  ```bash
-  dotnet restore
+    ``` bash
+    dotnet restore
 4. **Run the application**:
   - **Using Visual Studio**: Open the .sln file, then press F5.
   - **Using the command line**:
@@ -63,3 +63,4 @@
 - **Goal**: Make your drawing sessions more fun, more dynamic, and most importantly… more creative!
 
 Enjoy Gestura, and let your imagination run wild!
+
