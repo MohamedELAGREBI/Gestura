@@ -1,2 +1,4 @@
 # Gestura
-Outils pour les artistes et dessinateurs qui veulent pratiquer l'exercice de dessin de gesture;
+
+- [Version française](./README.fr.md)
+- [English Version](./README.en.md)
