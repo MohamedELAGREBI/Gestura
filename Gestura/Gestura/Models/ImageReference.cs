@@ -45,7 +45,7 @@ namespace Gestura.Models
             }
         }
 
-        [ForeignKey(nameof(Directory))]
+        [ForeignKey(nameof(ImageDirectory))]
         public virtual int DirectoryId { get; set; }
 
         [Ignore]

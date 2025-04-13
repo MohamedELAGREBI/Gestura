@@ -9,6 +9,10 @@ namespace Gestura.Models
         public int Id { get; set; }
 
         public int DrawingSessionId { get; set; }
+        [Ignore]
+        public ImageDirectory Directory { get; set; }
         public int ImageReferenceId { get; set; }
+        [Ignore]
+        public ImageReference ImageReference { get; set; }
     }
 }

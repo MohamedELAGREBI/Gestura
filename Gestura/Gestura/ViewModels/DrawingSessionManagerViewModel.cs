@@ -9,6 +9,7 @@ namespace Gestura.ViewModels
     public class DrawingSessionManagerViewModel : BaseViewModel, IDrawingSessionManagerViewModel
     {
         private readonly IDrawingSessionService _drawingSessionService;
+        private readonly IImageDirectoryService _imageDirectoryService;
         private readonly INotificationService _notificationService;
         private readonly IImageService _imageService;
 
@@ -32,11 +33,12 @@ namespace Gestura.ViewModels
         public ICommand DeleteSessionCommand { get; }
         public ICommand StartOrReplaySessionCommand { get; }
 
-        public DrawingSessionManagerViewModel(IImageService imageService, IDrawingSessionService drawingSessionService, INotificationService notificationService)
+        public DrawingSessionManagerViewModel(IImageService imageService, IImageDirectoryService imageDirectoryService, IDrawingSessionService drawingSessionService, INotificationService notificationService)
         {
             _drawingSessionService = drawingSessionService ?? throw new ArgumentNullException(nameof(drawingSessionService));
             _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
             _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
+            _imageDirectoryService = imageDirectoryService ?? throw new ArgumentNullException(nameof(imageDirectoryService));
 
             DrawingSessions = new ObservableCollection<DrawingSession>();
             FilteredDrawingSessions = new ObservableCollection<DrawingSession>();
@@ -95,7 +97,7 @@ namespace Gestura.ViewModels
         {
             try
             {
-                await Shell.Current.Navigation.PushModalAsync(new AddOrUpdateSessionPage(_imageService, this, null));
+                await Shell.Current.Navigation.PushModalAsync(new AddOrUpdateSessionPage(_imageService, _imageDirectoryService, this, null));
             }
             catch (Exception ex)
             {
@@ -129,7 +131,7 @@ namespace Gestura.ViewModels
                     throw new ArgumentNullException(nameof(session));
                 }
 
-                await Shell.Current.Navigation.PushModalAsync(new AddOrUpdateSessionPage(_imageService, this, session));
+                await Shell.Current.Navigation.PushModalAsync(new AddOrUpdateSessionPage(_imageService, _imageDirectoryService, this, session));
             }
             catch (Exception ex)
             {

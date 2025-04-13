@@ -1,4 +1,5 @@
 ﻿using Gestura.Interfaces;
+using Gestura.Models;
 using Gestura.Services;
 using SQLite;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Gestura.Repositories
 {
-    public class DirectoryRepository : IDirectoryRepository
+    public class DirectoryRepository : IImageDirectoryRepository
     {
         private readonly SQLiteAsyncConnection _database;
 
@@ -18,7 +19,33 @@ namespace Gestura.Repositories
             _database = MauiProgram.Services.GetService<DatabaseService>().GetConnection();
         }
 
-        public async Task<int> CreateDirectoryAsync(Models.Directory directory)
+        public Task<int> DeleteAsync(ImageDirectory directory)
+        {
+            var existingDirectory = GetDirectoryByIdAsync(directory.Id);
+            if (existingDirectory == null)
+            {
+                throw new InvalidOperationException($"Le répertoire \"{directory.Name}\" avec l'ID valant {directory.Id} n'existe pas en base.");
+            }
+
+            return _database.DeleteAsync(existingDirectory);
+        }
+
+        public Task<List<ImageDirectory>> GetAllAsync()
+        {
+            return _database.Table<ImageDirectory>().ToListAsync();
+        }
+
+        public Task<ImageDirectory> GetDirectoryByIdAsync(int id)
+        {
+            return _database.Table<ImageDirectory>().FirstOrDefaultAsync(d => d.Id == id);
+        }
+
+        public Task<ImageDirectory> GetDirectoryByNameAsync(string name)
+        {
+            return _database.Table<ImageDirectory>().FirstOrDefaultAsync(d => d.Name == name);
+        }
+
+        public async Task<ImageDirectory> InsertAsync(ImageDirectory directory)
         {
             var existingDirectory = await GetDirectoryByNameAsync(directory.Name);
             if (existingDirectory != null)
@@ -26,33 +53,14 @@ namespace Gestura.Repositories
                 throw new InvalidOperationException($"Le répertoire \"{directory.Name}\" existe déjà.");
             }
 
-            return await _database.InsertAsync(directory);
+            await _database.InsertAsync(directory);
+
+            return await GetDirectoryByNameAsync(directory.Name);
         }
 
-        public async Task<int> DeleteDirectoryAsync(Models.Directory directory)
+        public Task<int> UpdateAsync(ImageDirectory directory)
         {
-            var existingDirectory = await GetDirectoryByIdAsync(directory.Id);
-            if (existingDirectory == null)
-            {
-                throw new InvalidOperationException($"Le répertoire \"{directory.Name}\" avec l'ID valant {directory.Id} n'existe pas en base.");
-            }
-
-            return await _database.DeleteAsync(existingDirectory);
-        }
-
-        public Task<List<Models.Directory>> GetAllDirectoriesAsync()
-        {
-            return _database.Table<Models.Directory>().ToListAsync();
-        }
-
-        public Task<Models.Directory> GetDirectoryByIdAsync(int id)
-        {
-            return _database.Table<Models.Directory>().FirstOrDefaultAsync(d => d.Id == id);
-        }
-
-        public Task<Models.Directory> GetDirectoryByNameAsync(string name)
-        {
-            return _database.Table<Models.Directory>().FirstOrDefaultAsync(d => d.Name == name);
+            return _database.UpdateAsync(directory);
         }
     }
 }

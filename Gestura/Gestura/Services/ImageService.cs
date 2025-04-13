@@ -6,17 +6,17 @@ namespace Gestura.Services
 {
     public class ImageService : IImageService
     {
-        private readonly IDirectoryService _directoryService;
+        private readonly IImageDirectoryService _directoryService;
         private readonly IImageRepository _imageRepository;
 
         public ImageService(IImageRepository imageRepository)
         {
-            _directoryService = MauiProgram.Services.GetService<IDirectoryService>();
+            _directoryService = MauiProgram.Services.GetService<IImageDirectoryService>();
             _imageRepository = imageRepository ?? throw new ArgumentNullException(nameof(imageRepository));
 
-            if (!System.IO.Directory.Exists(Constantes.ImageFolderPath))
+            if (!Directory.Exists(Constantes.ImageFolderPath))
             {
-                System.IO.Directory.CreateDirectory(Constantes.ImageFolderPath);
+                Directory.CreateDirectory(Constantes.ImageFolderPath);
             }
         }
 
@@ -41,9 +41,9 @@ namespace Gestura.Services
             var directory = await _directoryService.GetDirectoryByNameAsync(directoryName);
             if (directory == null)
             {
-                var newDirectory = new Models.Directory { Name = directoryName };
+                var newDirectory = new Models.ImageDirectory { Name = directoryName };
                 var success = await _directoryService.CreateDirectoryAsync(newDirectory);
-                if (!success)
+                if (/*!success*/success is null)
                 {
                     throw new InvalidDataException($"Erreur lors de la création du répertoire {directoryName}.");
                 }
@@ -108,9 +108,9 @@ namespace Gestura.Services
             var directory = await _directoryService.GetDirectoryByNameAsync(directoryName);
             if (directory == null)
             {
-                var newDirectory = new Models.Directory { Name = directoryName };
+                var newDirectory = new Models.ImageDirectory { Name = directoryName };
                 var success = await _directoryService.CreateDirectoryAsync(newDirectory);
-                if (!success)
+                if (/*!success*/success is not null)
                 {
                     throw new InvalidDataException($"Erreur lors de la création du répertoire {directoryName}.");
                 }

@@ -6,73 +6,27 @@
              x:Class="Gestura.Views.ImageGalleryPage"
              Title="Image Gallery">
 
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <local:ImportMethodToVisibilityConverter x:Key="ImportMethodToVisibilityConverter"/>
-        </ResourceDictionary>
-    </ContentPage.Resources>
+    <Grid RowDefinitions="Auto, Auto, *" Padding="10">
+        <!-- Barre de recherche -->
+        <SearchBar Grid.Row="0"
+                   Placeholder="Rechercher ..."
+                   Text="{Binding SearchText, Mode=TwoWay}" />
 
-    <Grid RowSpacing="5" Style="{StaticResource SpacedGridStyle}">
-        <!-- Première ligne : fixe (Picker + bouton) -->
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <!-- Hauteur automatique pour le Picker pour la méthode d'import -->
-            <RowDefinition Height="Auto"/>
-            <!--Hauteur automatique pour le Picker pour le choix du répertoire-->
-            <RowDefinition Height="*" />
-            <!-- Le contenu défilable prendra tout l'espace restant -->
-        </Grid.RowDefinitions>
+        <!-- Bouton d'importation -->
+        <Button Grid.Row="1"
+                Text="Importer une image"
+                Command="{Binding OpenImportPopupCommand}" />
 
-        <Grid Grid.Row="0" Padding="10" Style="{StaticResource DefaultGridStyle}" BackgroundColor="{StaticResource Primary}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <Picker x:Name="ImportMethodPicker"
-                    Title="Importer des images"
-                    ItemsSource="{Binding ImportMethods}"
-                    SelectedItem="{Binding SelectedImportMethod, Mode=TwoWay}"
-                    HorizontalOptions="FillAndExpand"
-                    Style="{StaticResource DefaultPickerStyle}"/>
-
-            <Button Text="Importer" 
-                    Command="{Binding ImportCommand}"
-                    Grid.Column="1"
-                    Style="{StaticResource SecondaryButtonStyle}"
-                    HorizontalOptions="End"/>
-        </Grid>
-
-        <Grid Grid.Row="1" Padding="10" Style="{StaticResource DefaultGridStyle}" BackgroundColor="{StaticResource PrimaryDark}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <Picker Title="Répertoire d'importation"
-                    ItemsSource="{Binding DirectoryNames}"
-                    SelectedItem="{Binding SelectedDirectory, Mode=TwoWay}"
-                    HorizontalOptions="FillAndExpand"
-                    Style="{StaticResource DefaultPickerStyle}"/>
-
-            <Button Text="+"
-                    Command="{Binding CreateDirectoryCommand}"
-                    Grid.Column="1"
-                    Style="{StaticResource SecondaryButtonStyle}"
-                    HorizontalOptions="End"/>
-        </Grid>
-
-        <ScrollView Grid.Row="2" Padding="10">
-            <StackLayout>
-                <!-- Collection des répertoires -->
-                <CollectionView x:Name="DirectoryCollectionView" ItemsSource="{Binding Directories}" SelectionMode="None">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <components:DirectoryComponent/>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </StackLayout>
-        </ScrollView>
+        <!-- CollectionView avec défilement -->
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding FilteredDirectories}"
+                        VerticalOptions="FillAndExpand">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <components:DirectoryComponent Directory="{Binding}" />
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </Grid>
+
 </ContentPage>

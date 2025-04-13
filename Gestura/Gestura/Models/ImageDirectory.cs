@@ -2,8 +2,8 @@
 
 namespace Gestura.Models
 {
-    [Table("DIRECTORIES")]
-    public class Directory
+    [Table("IMAGE_DIRECTORIES")]
+    public class ImageDirectory
     {
         [PrimaryKey, AutoIncrement]
         public virtual int Id { get; set; }
@@ -14,7 +14,12 @@ namespace Gestura.Models
         public virtual DateTime CreatedAt { get; set; }
         public virtual DateTime UpdateAt { get; set; }
 
-        public Directory()
+        public virtual string Path { get; set; }
+
+        [Ignore]
+        public ICollection<ImageReference> ImageReferences { get; set; }
+
+        public ImageDirectory()
         {
             CreatedAt = DateTime.Now;
             UpdateAt = CreatedAt;

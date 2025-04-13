@@ -3,36 +3,49 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:components="clr-namespace:Gestura.Components"
              x:Class="Gestura.Components.DirectoryComponent">
-    <StackLayout>
-        <Button Text="{Binding DirectoryName}" Command="{Binding ToggleVisibilityCommand}"/>
 
-        <!--FlexLayout pour afficher les images-->
-        <FlexLayout Direction="Row"
-                    Wrap="Wrap"
-                    JustifyContent="Start"
-                    AlignItems="Start"
-                    BindableLayout.ItemsSource="{Binding Images}"
-                    IsVisible="{Binding IsExpanded}">
+    <VerticalStackLayout>
 
-            <!--Modèle d'élément dans le FlexLayout-->
-            <BindableLayout.ItemTemplate>
+        <SwipeView>
+            <SwipeView.RightItems>
+                <SwipeItems>
+                    <SwipeItem Text="Renommer"
+                               BackgroundColor="LightGray"
+                               Command="{Binding RenameDirectoryCommand}"/>
+
+                    <SwipeItem Text="Supprimer"
+                               BackgroundColor="Red"
+                               Command="{Binding DeleteDirectoryCommand}"/>
+                </SwipeItems>
+            </SwipeView.RightItems>
+            
+            <Grid>
+                <Label Text="{Binding Directory.Name}" FontSize="20" FontAttributes="Bold" />
+                <Button Text="⋮"
+                    HorizontalOptions="End"
+                    VerticalOptions="Center"
+                    Padding="5"
+                    FontSize="18">
+                    <FlyoutBase.ContextFlyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Text="Renommer" Command="{Binding RenameDirectoryCommand}"/>
+                            <MenuFlyoutItem Text="Supprimer" Command="{Binding DeleteDirectoryCommand}"/>
+                        </MenuFlyout>
+                    </FlyoutBase.ContextFlyout>
+                </Button>
+            </Grid>
+
+        </SwipeView>
+
+        <CollectionView ItemsSource="{Binding VisibleImages}" ItemsLayout="HorizontalList">
+            <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <StackLayout Padding="10">
-                        <Image Source="{Binding FilePath}"
-                   Aspect="AspectFill"
-                   HeightRequest="150"
-                   WidthRequest="150" />
-
-                        <!--Bouton "X" pour suppression, prend juste la place nécessaire-->
-                        <Button Text="X"
-                                Command="{Binding BindingContext.DeleteImageCommand, Source={RelativeSource AncestorType={x:Type components:DirectoryComponent}}}"
-                                CommandParameter="{Binding .}"
-                                Style="{StaticResource OutlineButtonSecondaryStyle}"
-                                HorizontalOptions="End" />
-                    </StackLayout>
+                    <Image Source="{Binding FilePath}" HeightRequest="200" Margin="5" />
                 </DataTemplate>
-            </BindableLayout.ItemTemplate>
-        </FlexLayout>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
-    </StackLayout>
+        <Button Text="{Binding ToggleButtonText}" Command="{Binding ToggleExpandCommand}" />
+    </VerticalStackLayout>
+
 </ContentView>

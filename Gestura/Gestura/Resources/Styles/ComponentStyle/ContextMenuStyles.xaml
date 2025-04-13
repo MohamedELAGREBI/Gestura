@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Gestura.Resources.Styles.ComponentStyle.ContextMenuStyles">
+
+    <Style x:Key="ContextMenuStyle" TargetType="StackLayout">
+        <Setter Property="BackgroundColor" Value="{StaticResource DarkBackgroundVeryDark3}"/>
+        <Setter Property="Padding" Value="15"/>
+        <Setter Property="Spacing" Value="8"/>
+        <Setter Property="HorizontalOptions" Value="Start"/>
+        <Setter Property="VerticalOptions" Value="Start"/>
+        <Setter Property="Shadow" Value="5,0,5,Gray"/>
+    </Style>
+
+    <Style x:Key="ContextMenuButtonStyle" TargetType="Button">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{StaticResource White}" />
+        <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="Padding" Value="10, 5" />
+        <Setter Property="CornerRadius" Value="8" />
+    </Style>
+
+    <Style x:Key="NonDestructiveMenuButtonStyle" BasedOn="{StaticResource ContextMenuButtonStyle}" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryLight}"/>
+    </Style>
+
+    <Style x:Key="DestructiveMenuButtonStyle" BasedOn="{StaticResource ContextMenuButtonStyle}" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource SecondaryLight}"/>
+    </Style>
+    
+</ResourceDictionary>

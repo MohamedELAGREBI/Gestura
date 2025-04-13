@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Gestura.Components.ImportImagePopup"
+             Title="Import d'image">
+
+    <ScrollView>
+
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <!-- Sélection du répertoire existant -->
+            <Label Text="Sélectionnez un répertoire existant :" />
+            <Picker ItemsSource="{Binding DirectoryNames}"
+                    SelectedItem="{Binding SelectedDirectory}"
+                    Title="Choisissez un répertoire" />
+
+            <!-- Création d'un nouveau répertoire -->
+            <Label Text="Ou créez un nouveau répertoire :" />
+            <Entry Placeholder="Nom du nouveau répertoire"
+                   Text="{Binding NewDirectoryName}" />
+
+            <!-- Sélection de la méthode d'importation -->
+            <Label Text="Méthode d'importation :" />
+            <Picker ItemsSource="{Binding ImportMethods}"
+                    SelectedItem="{Binding SelectedImportMethod}"
+                    Title="Choisissez une méthode" />
+
+            <!-- Champ pour l'URL de l'image (affiché uniquement en mode URL) -->
+            <StackLayout IsVisible="{Binding IsUrlMode}">
+                <Label Text="URL de l'image :" />
+                <Entry Placeholder="Entrez l'URL de l'image"
+                       Text="{Binding ImageUrl}" />
+            </StackLayout>
+
+            <!-- Boutons d'action -->
+            <Button Text="Importer"
+                    Command="{Binding ImportCommand}"
+                    IsEnabled="{Binding IsNotBusy}" />
+            <Button Text="Annuler"
+                    Command="{Binding CancelCommand}"
+                    IsEnabled="{Binding IsNotBusy}" />
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>

@@ -11,7 +11,7 @@
             <local:ImageSelectionConverter x:Key="ImageSelectionConverter"/>
         </ResourceDictionary>
     </ContentPage.Resources>
-    
+
     <Grid Padding="10" RowDefinitions="*, Auto, *, Auto">
 
         <ScrollView Grid.Row="0" Padding="10">
@@ -74,7 +74,42 @@
                     </BindableLayout.ItemTemplate>
 
                 </FlexLayout>
+
+
+                <CollectionView ItemsSource="{Binding GroupedAvailableImages}"
+                                IsGrouped="True"
+                                x:Name="ImageCollectionView">
+                    <CollectionView.GroupHeaderTemplate>
+                        <DataTemplate>
+                            <Label Text="{Binding DirectoryName}"
+                                   FontAttributes="Bold"
+                                   FontSize="Medium"
+                                   Padding="10,5" />    
+                        </DataTemplate>
+                    </CollectionView.GroupHeaderTemplate>
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical"
+                                         Span="{Binding Columns}"
+                                         HorizontalItemSpacing="10"
+                                         VerticalItemSpacing="10"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid WidthRequest="200" Margin="5">
+                                <Image Source="{Binding FilePath}"
+                                       Aspect="AspectFill"
+                                       HeightRequest="200"> 
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.ToggleImageSelectionCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                              CommandParameter="{Binding .}" />
+                                    </Image.GestureRecognizers>
+                                </Image>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </StackLayout>
+
         </ScrollView>
 
         <StackLayout Orientation="Horizontal" Grid.Row="3" HorizontalOptions="Center" Spacing="20" Padding="10,0">

@@ -1,5 +1,6 @@
 ﻿using Gestura.Interfaces;
 using Gestura.Models;
+using Microsoft.Maui.Controls.Platform;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -7,71 +8,89 @@ namespace Gestura.ViewModels
 {
     public class DirectoryComponentViewModel : BaseViewModel
     {
-        private readonly IImageService _imageService;
-        private readonly INotificationService _notificationService;
-        private readonly Models.Directory _directory;
+        private readonly IImageDirectoryService _imageDirectoryService;
 
-        public string DirectoryName { get; set; }
-        public ObservableCollection<ImageReference> Images { get; set; }
+        public ImageDirectory Directory { get; }
+        public ObservableCollection<ImageReference> VisibleImages { get; } = new ObservableCollection<ImageReference>();
 
-        private bool _isExpanded;
+        private bool _isExpanded = false;
         public bool IsExpanded
         {
             get => _isExpanded;
-            set => SetProperty(ref _isExpanded, value);
-        }
-
-        public ICommand ToggleVisibilityCommand { get; }
-        public ICommand DeleteImageCommand { get; }
-
-        public DirectoryComponentViewModel(Models.Directory directory, IImageService imageService, INotificationService notificationService)
-        {
-            DirectoryName = directory.Name;
-            _directory = directory;
-            _imageService = imageService;
-
-            Images = new ObservableCollection<ImageReference>();
-
-            IsExpanded = false;
-
-            ToggleVisibilityCommand = new Command(async () => await ToggleVisibilityAsync());
-            DeleteImageCommand = new Command<ImageReference>(async (image) => await OnDeleteImageAsync(image));
-            _notificationService = notificationService;
-        }
-
-        private async Task ToggleVisibilityAsync()
-        {
-            IsExpanded = !IsExpanded;
-
-            Images.Clear();
-
-            var images = await _imageService.GetImagesByDirectoryIdAsync(_directory.Id);
-            foreach (var image in images)
+            set
             {
-                Images.Add(image);
-            }
-        }
-
-        private async Task OnDeleteImageAsync(ImageReference imageReference)
-        {
-            try
-            {
-                var result = await _imageService.DeleteImageAsync(imageReference);
-                if (result)
-                {
-                    var image = Images.FirstOrDefault(i => i == imageReference);
-                    if (image != null)
-                    {
-                        Images.Remove(image);
-                        await _notificationService.ShowSuccessAsync("Image supprimée avec succès.");
-                    }
+                if (SetProperty(ref _isExpanded, value))
+                { 
+                    RefreshImages();
+                    AnimatedExpand?.Invoke(_isExpanded);
                 }
             }
-            catch (Exception ex)
+        }
+
+        public ICommand ToggleExpandCommand { get; }
+        public ICommand RenameDirectoryCommand { get; }
+        public ICommand DeleteDirectoryCommand { get; }
+
+        public string ToggleButtonText => IsExpanded ? "Réduire" : "Voir plus";
+
+        public bool IsVisible { get; set; } = true; // pour filtrage
+
+        public Action<bool>? AnimatedExpand { get; set; }
+
+        public event EventHandler? DirectoryDeleted;
+
+        public DirectoryComponentViewModel(IImageDirectoryService imageDirectoryService, ImageDirectory directory)
+        {
+            Directory = directory;
+            _imageDirectoryService = imageDirectoryService;
+
+            ToggleExpandCommand = new Command(() => IsExpanded = !IsExpanded);
+            DeleteDirectoryCommand = new Command(OnDeleteDirectory);
+            RenameDirectoryCommand = new Command(OnRenameDirectory);
+
+            RefreshImages();
+        }
+
+        private async void OnDeleteDirectory()
+        {
+            var isDeleted = await _imageDirectoryService.DeleteDirectoryAsync(Directory);
+            if (isDeleted)
             {
-                await _notificationService.ShowErrorAsync("Erreur lors de la suppression de l'image : " + ex.Message);
+                DirectoryDeleted?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                //
             }
         }
 
+        private async void OnRenameDirectory()
+        {
+            //var newName = await PromptForNewNameAsync();
+            //if (!string.IsNullOrWhiteSpace(newName))
+            //{
+            //    var isRenamed = await _imageDirectoryService.UpdateDirectoryByNameAsync(Directory.Id, newName);
+            //    if (isRenamed)
+            //    {
+            //        Directory.Name = newName;
+            //        OnPropertyChanged(nameof(Directory));
+            //    }
+            //    else
+            //    {
+            //        //
+            //    }
+            //}
+        }
+
+        private void RefreshImages()
+        {
+            VisibleImages.Clear();
+            var images = IsExpanded ? Directory.ImageReferences : Directory.ImageReferences.Take(5);
+            foreach (var image in images)
+            {
+                VisibleImages.Add(image);
+            }
+            OnPropertyChanged(nameof(ToggleButtonText));
+        }
     }
 }
