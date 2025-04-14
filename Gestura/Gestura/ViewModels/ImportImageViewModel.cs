@@ -1,13 +1,7 @@
 ﻿using Gestura.Commons;
-using Gestura.Converters;
 using Gestura.Interfaces;
 using Gestura.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Gestura.ViewModels
@@ -163,6 +157,18 @@ namespace Gestura.ViewModels
                 }
 
                 await Shell.Current.Navigation.PopModalAsync();
+            }
+            catch (NotSupportedException ex)
+            {
+                // Gérer le cas où le format de l'image n'est pas supporté
+                await Shell.Current.DisplayAlert("Erreur", $"Format d'image non supporté : {ex.Message}", "OK");
+                // Afficher un message à l'utilisateur ou enregistrer l'erreur
+            }
+            catch (IOException ex)
+            {
+                // Gérer les erreurs liées au flux, comme un flux corrompu
+                await Shell.Current.DisplayAlert("Erreur", $"Erreur de lecture du flux : {ex.Message}", "OK");
+                // Afficher un message à l'utilisateur ou enregistrer l'erreur
             }
             catch (Exception ex)
             {

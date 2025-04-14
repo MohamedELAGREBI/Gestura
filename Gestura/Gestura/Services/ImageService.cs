@@ -1,6 +1,7 @@
 ﻿using Gestura.Commons;
 using Gestura.Interfaces;
 using Gestura.Models;
+using SkiaSharp;
 
 namespace Gestura.Services
 {
@@ -55,9 +56,9 @@ namespace Gestura.Services
 
             var directoryPath = Path.Combine(Constantes.ImageFolderPath, directory.Name);
 
-            if (!System.IO.Directory.Exists(directoryPath))
+            if (!Directory.Exists(directoryPath))
             {
-                System.IO.Directory.CreateDirectory(directoryPath);
+                Directory.CreateDirectory(directoryPath);
             }
 
             using (var stream = await result.OpenReadAsync())
@@ -122,9 +123,9 @@ namespace Gestura.Services
 
             var directoryPath = Path.Combine(Constantes.ImageFolderPath, directory.Name);
 
-            if (!System.IO.Directory.Exists(directoryPath))
+            if (!Directory.Exists(directoryPath))
             {
-                System.IO.Directory.CreateDirectory(directoryPath);
+                Directory.CreateDirectory(directoryPath);
             }
 
             using (var client = new HttpClient())
@@ -176,10 +177,38 @@ namespace Gestura.Services
 
         private async Task SaveImageFileAsync(string filePath, Stream stream)
         {
-            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            if (string.IsNullOrWhiteSpace(filePath))
             {
-                await stream.CopyToAsync(fileStream);
+                throw new ArgumentException("Le chemin du fichier ne peut pas être vide.", nameof(filePath));
             }
+
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream), "Le flux d'entrée ne peut pas être nul.");
+            }
+
+            if (!stream.CanRead)
+            {
+                throw new ArgumentException("Le flux d'entrée doit être lisible.", nameof(stream));
+            }
+
+            // S'assurer que le répertoire existe
+            var directory = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // effectuer le traitement des images sans bloquer le thread principal
+            await Task.Run(async () =>
+            {
+                var resizedStream = await ResizeImageAsync(stream);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                {
+                    await resizedStream.CopyToAsync(fileStream);
+                }
+            });
         }
 
         public async Task<List<ImageReference>> GetAllImagesAsync()
@@ -208,6 +237,67 @@ namespace Gestura.Services
             return deleteResult;
         }
 
+        private static async Task<Stream> ResizeImageAsync(Stream originalStream)
+        {
+            if (originalStream == null)
+            {
+                throw new ArgumentNullException(nameof(originalStream), "Le flux d'entrée ne peut pas être nul.");
+            }
 
+            if (!originalStream.CanRead)
+            {
+                throw new ArgumentException("Le flux d'entrée doit être lisible.", nameof(originalStream));
+            }
+
+            MemoryStream output;
+
+            // Créer une copie du flux d'origine
+            using var memoryStream = new MemoryStream();
+            await originalStream.CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
+
+            // Décoder l'image d'origine
+            using var original = SKBitmap.Decode(memoryStream);
+            if (original == null)
+            {
+                throw new InvalidOperationException("Impossible de décoder l'image d'origine.");
+            }
+
+            var originalWidth = original.Width;
+            var originalHeight = original.Height;
+
+            // Vérifier si le redimensionnement est nécessaire
+            if (!ImageUtils.ShouldResize(originalWidth, originalHeight))
+            {
+                // Retourner une nouvelle copie du flux pour éviter les problèmes de flux fermé
+                output = new MemoryStream(memoryStream.ToArray());
+                output.Position = 0;
+                return output;
+            }
+
+            // Calculer les nouvelles dimensions
+            var (newWidth, newHeight) = ImageUtils.GetResizedDimensions(originalWidth, originalHeight);
+
+            // Créer une nouvelle image redimensionnée
+            var resized = new SKBitmap(newWidth, newHeight);
+            var samplingOptions = new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.None);
+            if (!original.ScalePixels(resized, samplingOptions))
+            {
+                throw new InvalidOperationException("Le redimensionnement de l'image a échoué.");
+            }
+
+            // Encoder l'image redimensionnée en JPEG
+            using var image = SKImage.FromBitmap(resized);
+            output = new MemoryStream();
+            using var encodedData = image.Encode(SKEncodedImageFormat.Jpeg, 80);
+            if (encodedData == null)
+            {
+                throw new InvalidOperationException("L'encodage de l'image a échoué.");
+            }
+
+            encodedData.SaveTo(output);
+            output.Position = 0;
+            return output;
+        }
     }
 }
