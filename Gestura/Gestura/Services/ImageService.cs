@@ -70,7 +70,7 @@ namespace Gestura.Services
                     throw new InvalidDataException("Le fichier existe déjà.");
                 }
 
-                await SaveImageFileAsync(filePath, stream);
+                filePath = await SaveImageFileAsync(filePath, stream);
 
                 var imageReference = new ImageReference
                 {
@@ -150,7 +150,7 @@ namespace Gestura.Services
                         throw new InvalidDataException("Le fichier existe déjà.");
                     }
 
-                    await SaveImageFileAsync(filePath, stream);
+                    filePath = await SaveImageFileAsync(filePath, stream);
 
                     var imageReference = new ImageReference
                     {
@@ -175,7 +175,7 @@ namespace Gestura.Services
             }
         }
 
-        private async Task SaveImageFileAsync(string filePath, Stream stream)
+        private async Task<string> SaveImageFileAsync(string filePath, Stream stream)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -191,9 +191,11 @@ namespace Gestura.Services
             {
                 throw new ArgumentException("Le flux d'entrée doit être lisible.", nameof(stream));
             }
+            // Forcer .jpg comme extension
+            var finalPath = Path.ChangeExtension(filePath, ".jpg");
 
             // S'assurer que le répertoire existe
-            var directory = Path.GetDirectoryName(filePath);
+            var directory = Path.GetDirectoryName(finalPath);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
@@ -204,11 +206,13 @@ namespace Gestura.Services
             {
                 var resizedStream = await ResizeImageAsync(stream);
 
-                using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                using (var fileStream = new FileStream(finalPath, FileMode.Create, FileAccess.Write))
                 {
                     await resizedStream.CopyToAsync(fileStream);
                 }
             });
+
+            return finalPath;
         }
 
         public async Task<List<ImageReference>> GetAllImagesAsync()
@@ -266,11 +270,31 @@ namespace Gestura.Services
             var originalWidth = original.Width;
             var originalHeight = original.Height;
 
+            // Appliquer un fond blanc si l'image a de la transparence
+            SKBitmap bitmapToUse = original;
+            if (original.AlphaType != SKAlphaType.Opaque)
+            {
+                var withBackground = new SKBitmap(originalWidth, originalHeight);
+                using (var canvas = new SKCanvas(withBackground))
+                {
+                    canvas.Clear(SKColors.White); // Fond blanc
+                    canvas.DrawBitmap(original, 0, 0);
+                }
+                bitmapToUse = withBackground;
+            }
+
             // Vérifier si le redimensionnement est nécessaire
             if (!ImageUtils.ShouldResize(originalWidth, originalHeight))
             {
-                // Retourner une nouvelle copie du flux pour éviter les problèmes de flux fermé
-                output = new MemoryStream(memoryStream.ToArray());
+                using var imageNoResize = SKImage.FromBitmap(bitmapToUse);
+                output = new MemoryStream();
+                using var encodedNoResize = imageNoResize.Encode(SKEncodedImageFormat.Jpeg, 80);
+                if (encodedNoResize == null)
+                {
+                    throw new InvalidOperationException("L'encodage JPEG a échoué.");
+                }
+
+                encodedNoResize.SaveTo(output);
                 output.Position = 0;
                 return output;
             }
@@ -281,7 +305,7 @@ namespace Gestura.Services
             // Créer une nouvelle image redimensionnée
             var resized = new SKBitmap(newWidth, newHeight);
             var samplingOptions = new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.None);
-            if (!original.ScalePixels(resized, samplingOptions))
+            if (!bitmapToUse.ScalePixels(resized, samplingOptions))
             {
                 throw new InvalidOperationException("Le redimensionnement de l'image a échoué.");
             }
@@ -292,7 +316,7 @@ namespace Gestura.Services
             using var encodedData = image.Encode(SKEncodedImageFormat.Jpeg, 80);
             if (encodedData == null)
             {
-                throw new InvalidOperationException("L'encodage de l'image a échoué.");
+                throw new InvalidOperationException("L'encodage JPEG a échoué.");
             }
 
             encodedData.SaveTo(output);
